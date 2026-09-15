@@ -2,18 +2,72 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Bingo Personal</title>
+    <title>Generador de Cartones - Bingo</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: white; text-align: center; padding: 50px; }
-        h1 { color: #f472b6; }
-        .box { background: #1e293b; padding: 20px; border-radius: 10px; display: inline-block; margin-top: 20px; }
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f9; margin: 0; padding: 20px; }
+        .card { background: white; border: 3px solid #333; display: inline-block; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 20px; }
+        h1 { color: #d9534f; }
+        table { border-collapse: collapse; margin: 0 auto; }
+        th, td { border: 2px solid #333; width: 55px; height: 55px; text-align: center; font-size: 20px; font-weight: bold; }
+        th { background-color: #0275d8; color: white; }
+        td { background-color: #fff; }
+        .free { background-color: #ffc107; font-size: 14px; }
+        button { background-color: #5cb85c; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
+        button:hover { background-color: #4cae4c; }
     </style>
 </head>
 <body>
-    <h1>¡Bienvenida a mi Bingo!</h1>
-    <div class="box">
-        <p>Pronto arrancaremos con los cartones y la jugadera.</p>
+
+    <h1>Bingo Familiar</h1>
+    <button onclick="generarCarton()">Generar Nuevo Cartón</button>
+
+    <div class="card" id="card-container">
+        <!-- El cartón se generará aquí -->
     </div>
+
+<script>
+function obtenerNumeros(min, max, cantidad) {
+    let numeros = [];
+    while(numeros.length < cantidad){
+        let r = Math.floor(Math.random() * (max - min + 1)) + min;
+        if(numeros.indexOf(r) === -1) numeros.push(r);
+    }
+    return numeros;
+}
+
+function generarCarton() {
+    let b = obtenerNumeros(1, 15, 5);
+    let i = obtenerNumeros(16, 30, 5);
+    let n = obtenerNumeros(31, 45, 4); // 4 porque el centro es LIBRE
+    let g = obtenerNumeros(46, 60, 5);
+    let o = obtenerNumeros(61, 75, 5);
+
+    n.splice(2, 0, "FREE"); // Espacio libre en el centro
+
+    let html = "<table><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>";
+    
+    for (let row = 0; row < 5; row++) {
+        html += "<tr>";
+        html += `<td>${b[row]}</td>`;
+        html += `<td>${i[row]}</td>`;
+        let valN = n[row];
+        if(valN === "FREE") {
+            html += `<td class="free">GRATIS</td>`;
+        } else {
+            html += `<td>${valN}</td>`;
+        }
+        html += `<td>${g[row]}</td>`;
+        html += `<td>${o[row]}</td>`;
+        html += "</tr>";
+    }
+    html += "</table>";
+
+    document.getElementById("card-container").innerHTML = html;
+}
+
+// Generar uno al cargar la página
+generarCarton();
+</script>
+
 </body>
 </html>
