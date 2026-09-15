@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bingo Lineal</title>
+  <title>Bingo Lineal Vizzio</title>
   <style>
     body {
       background-color: #0f172a;
@@ -59,14 +59,14 @@
       margin-bottom: 15px;
     }
 
-    /* Estilos de la Tabla del Cartón */
+    /* Tabla del Cartón */
     table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 10px; overflow: hidden; }
     th { background-color: #0284c7; color: white; padding: 10px; font-size: 1.1rem; }
     td { background-color: #ffffff; color: #0f172a; padding: 12px 5px; font-weight: bold; border: 1px solid #cbd5e1; font-size: 1.1rem; text-align: center; }
-    td.marcado { background-color: #22c55e; color: white; }
+    td.marcado { background-color: #22c55e !important; color: white !important; }
     td.gratis { background-color: #eab308; color: #0f172a; font-size: 0.8rem; }
 
-    /* Estilos de la Tómbola de Admin */
+    /* Tómbola Admin */
     .bola-gigante {
       width: 90px;
       height: 90px;
@@ -101,6 +101,15 @@
       font-size: 0.85rem;
       font-weight: bold;
     }
+    .alerta-ganador {
+      background-color: #22c55e;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      animation: pulse 1s infinite alternate;
+    }
   </style>
 </head>
 <body>
@@ -120,9 +129,10 @@
     <p class="subtitle">Selecciona tu número de cartón asignado:</p>
     
     <select id="select-carton" onchange="cargarCarton(this.value)">
-      <!-- Se generan opciones del 1 al 30 dinámicamente -->
+      <!-- Opciones del 1 al 30 -->
     </select>
 
+    <div id="mensaje-ganador-jugador"></div>
     <div id="contenedor-carton"></div>
     
     <button class="btn btn-admin" onclick="irA('pantalla-inicio')" style="margin-top: 20px;">← Volver al Menú</button>
@@ -136,6 +146,7 @@
     <div id="bola-actual" class="bola-gigante">--</div>
 
     <button class="btn btn-cantar" onclick="sacarBola()">🎲 Sacar / Cantar Bola</button>
+    <button class="btn btn-admin" onclick="reiniciarJuego()" style="background-color:#ef4444; color:white;">🔄 Reiniciar Partida</button>
     
     <p style="margin-top:15px; font-size:0.9rem; color:#94a3b8;">Bolas Cantadas:</p>
     <div id="historial-bolas" class="historial"></div>
@@ -144,7 +155,10 @@
   </div>
 
   <script>
-    // 1. GENERACIÓN DE CARTONES (DEL 1 AL 30)
+    let numerosSacados = [];
+    let cartonActualMatriz = [];
+
+    // Generación matemática de los 30 cartones únicos
     function generarSemillaCarton(numero) {
       const columnas = [
         [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
@@ -170,7 +184,7 @@
       return carton;
     }
 
-    // Inicializar Selector de 30 Cartones
+    // Cargar opciones del 1 al 30 en el menú desplegable
     const select = document.getElementById('select-carton');
     for (let i = 1; i <= 30; i++) {
       let opt = document.createElement('option');
@@ -180,39 +194,42 @@
     }
 
     function cargarCarton(num) {
-      const matriz = generarSemillaCarton(parseInt(num));
-      let html = '<table><thead><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr></thead><tbody>';
+      cartonActualMatriz = generarSemillaCarton(parseInt(num));
+      document.getElementById('mensaje-ganador-jugador').innerHTML = '';
       
-      matriz.forEach(fila => {
+      let html = '<table id="tabla-carton"><thead><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr></thead><tbody>';
+      
+      cartonActualMatriz.forEach((fila, i) => {
         html += '<tr>';
-        fila.forEach(celda => {
-          let clase = celda === "GRATIS" ? "gratis" : "";
-          html += `<td class="${clase}">${celda}</td>`;
+        fila.forEach((celda, j) => {
+          let esGratis = celda === "GRATIS";
+          let clase = esGratis ? "gratis marcado" : "";
+          let valor = esGratis ? "GRATIS" : celda;
+          html += `<td id="celda-${i}-${j}" class="${clase}" data-valor="${celda}">${valor}</td>`;
         });
         html += '</tr>';
       });
       
       html += '</tbody></table>';
       document.getElementById('contenedor-carton').innerHTML = html;
+      marcarNumerosAuto();
     }
 
-    // Cargar cartón 1 por defecto
-    cargarCarton(1);
-
-    // 2. NAVEGACIÓN ENTRE PANTALLAS
+    // Navegación
     function irA(pantallaId) {
       document.getElementById('pantalla-inicio').classList.add('hidden');
       document.getElementById('pantalla-jugador').classList.add('hidden');
       document.getElementById('pantalla-admin').classList.add('hidden');
       document.getElementById(pantallaId).classList.remove('hidden');
+      if (pantallaId === 'pantalla-jugador') {
+        marcarNumerosAuto();
+      }
     }
 
-    // 3. LÓGICA DE TÓMBOLA DE ADMINISTRADORA
-    let numerosSacados = [];
-
+    // Tómbola parlante
     function sacarBola() {
       if (numerosSacados.length >= 75) {
-        alert("¡Ya salieron todas las bolitas!");
+        hablar("Ya salieron todas las bolitas");
         return;
       }
 
@@ -232,22 +249,66 @@
 
       let bolaTexto = `${letra}-${num}`;
       
-      // Mostrar en pantalla gigante
       document.getElementById('bola-actual').innerText = bolaTexto;
 
-      // Agregar al historial visual
       let mini = document.createElement('span');
       mini.className = 'mini-bola';
       mini.innerText = bolaTexto;
       document.getElementById('historial-bolas').prepend(mini);
 
-      // Voz cantante del sistema
+      hablar(`${letra}, ${num}`);
+    }
+
+    function hablar(texto) {
       if ('speechSynthesis' in window) {
-        let voz = new SpeechSynthesisUtterance(`${letra}, ${num}`);
+        window.speechSynthesis.cancel();
+        let voz = new SpeechSynthesisUtterance(texto);
         voz.lang = 'es-ES';
         window.speechSynthesis.speak(voz);
       }
     }
+
+    // Marcado y verificación automática de victorias
+    function marcarNumerosAuto() {
+      let celdas = document.querySelectorAll('#tabla-carton td');
+      celdas.forEach(celda => {
+        let val = parseInt(celda.getAttribute('data-valor'));
+        if (numerosSacados.includes(val)) {
+          celda.classList.add('marcado');
+        }
+      });
+      verificarGanador();
+    }
+
+    function verificarGanador() {
+      let filas = document.querySelectorAll('#tabla-carton tr');
+      let esGanador = false;
+
+      // Evaluar filas completas
+      filas.forEach((fila, idx) => {
+        if (idx === 0) return; // Omitir encabezado
+        let celdas = fila.querySelectorAll('td');
+        if (celdas.length > 0) {
+          let completada = Array.from(celdas).every(c => c.classList.contains('marcado'));
+          if (completada) esGanador = true;
+        }
+      });
+
+      if (esGanador && document.getElementById('mensaje-ganador-jugador').innerText === '') {
+        document.getElementById('mensaje-ganador-jugador').innerHTML = '<div class="alerta-ganador">🎉 ¡BINGO! ¡CARTÓN GANADOR! 🎉</div>';
+        hablar("¡Atención! ¡Tenemos un cartón ganador!");
+      }
+    }
+
+    function reiniciarJuego() {
+      numerosSacados = [];
+      document.getElementById('bola-actual').innerText = '--';
+      document.getElementById('historial-bolas').innerHTML = '';
+      hablar("Partida reiniciada");
+    }
+
+    // Cargar cartón 1 por defecto al abrir
+    cargarCarton(1);
   </script>
 </body>
 </html>
