@@ -1,55 +1,89 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Cartones - Bingo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Familiar - Selecciona tu Cartón</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f9; margin: 0; padding: 20px; }
-        .card { background: white; border: 3px solid #333; display: inline-block; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 20px; }
-        h1 { color: #d9534f; }
-        table { border-collapse: collapse; margin: 0 auto; }
-        th, td { border: 2px solid #333; width: 55px; height: 55px; text-align: center; font-size: 20px; font-weight: bold; }
+        h1 { color: #d9534f; margin-bottom: 5px; }
+        p { color: #555; }
+        .selector-box { background: white; padding: 15px; border-radius: 8px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer; }
+        .card { background: white; border: 3px solid #333; display: none; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 0 auto; max-width: 320px; }
+        .card.active { display: inline-block; }
+        h2 { color: #0275d8; margin-top: 0; }
+        table { border-collapse: collapse; margin: 0 auto; width: 100%; }
+        th, td { border: 2px solid #333; width: 50px; height: 50px; text-align: center; font-size: 18px; font-weight: bold; }
         th { background-color: #0275d8; color: white; }
         td { background-color: #fff; }
-        .free { background-color: #ffc107; font-size: 14px; }
-        button { background-color: #5cb85c; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
-        button:hover { background-color: #4cae4c; }
+        .free { background-color: #ffc107; font-size: 13px; }
     </style>
 </head>
 <body>
 
     <h1>Bingo Familiar</h1>
-    <button onclick="generarCarton()">Generar Nuevo Cartón</button>
+    <p>Selecciona tu número de cartón asignado:</p>
 
-    <div class="card" id="card-container">
-        <!-- El cartón se generará aquí -->
+    <div class="selector-box">
+        <select id="cartonSelect" onchange="mostrarCarton()">
+            <option value="">-- Elige un Cartón --</option>
+        </select>
+    </div>
+
+    <div id="cards-container">
+        <!-- Los cartones se generan aquí automáticamente -->
     </div>
 
 <script>
-function obtenerNumeros(min, max, cantidad) {
+// Función para generar números aleatorios sin repetir por rango
+function obtenerNumeros(min, max, cantidad, semilla) {
     let numeros = [];
+    // Usamos una semilla simple basada en el número de cartón para que siempre sea el mismo cartón
+    let random = function() {
+        semilla = (semilla * 9301 + 49297) % 233280;
+        return semilla / 233280;
+    };
+
     while(numeros.length < cantidad){
-        let r = Math.floor(Math.random() * (max - min + 1)) + min;
+        let r = Math.floor(random() * (max - min + 1)) + min;
         if(numeros.indexOf(r) === -1) numeros.push(r);
     }
     return numeros;
 }
 
-function generarCarton() {
-    let b = obtenerNumeros(1, 15, 5);
-    let i = obtenerNumeros(16, 30, 5);
-    let n = obtenerNumeros(31, 45, 4); // 4 porque el centro es LIBRE
-    let g = obtenerNumeros(46, 60, 5);
-    let o = obtenerNumeros(61, 75, 5);
+const totalCartones = 30; // Aquí defines cuántos cartones quieres generar (ej. 30)
+const select = document.getElementById("cartonSelect");
+const container = document.getElementById("cards-container");
 
-    n.splice(2, 0, "FREE"); // Espacio libre en el centro
+// Crear las opciones del menú desplegable y los cartones
+for (let i = 1; i <= totalCartones; i++) {
+    // Agregar opción al menú
+    let option = document.createElement("option");
+    option.value = i;
+    option.textContent = `Cartón #${i}`;
+    select.appendChild(option);
 
-    let html = "<table><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>";
+    // Generar los números fijos para este cartón usando 'i' como base
+    let b = obtenerNumeros(1, 15, 5, i * 1);
+    let colI = obtenerNumeros(16, 30, 5, i * 2);
+    let n = obtenerNumeros(31, 45, 4, i * 3);
+    let g = obtenerNumeros(46, 60, 5, i * 4);
+    let o = obtenerNumeros(61, 75, 5, i * 5);
+
+    n.splice(2, 0, "FREE"); // Espacio centro
+
+    // Construir el HTML del cartón
+    let cardDiv = document.createElement("div");
+    cardDiv.className = "card";
+    cardDiv.id = `carton-${i}`;
     
+    let html = `<h2>Cartón #${i}</h2><table><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>`;
     for (let row = 0; row < 5; row++) {
         html += "<tr>";
         html += `<td>${b[row]}</td>`;
-        html += `<td>${i[row]}</td>`;
+        html += `<td>${colI[row]}</td>`;
         let valN = n[row];
         if(valN === "FREE") {
             html += `<td class="free">GRATIS</td>`;
@@ -61,12 +95,24 @@ function generarCarton() {
         html += "</tr>";
     }
     html += "</table>";
-
-    document.getElementById("card-container").innerHTML = html;
+    cardDiv.innerHTML = html;
+    container.appendChild(cardDiv);
 }
 
-// Generar uno al cargar la página
-generarCarton();
+function mostrarCarton() {
+    let seleccion = select.value;
+    // Ocultar todos
+    let todasLasTarjetas = document.querySelectorAll(".card");
+    todasLasTarjetas.forEach(c => c.classList.remove("active"));
+
+    // Mostrar el seleccionado
+    if (seleccion !== "") {
+        let tarjetaActiva = document.getElementById(`carton-${seleccion}`);
+        if (tarjetaActiva) {
+            tarjetaActiva.classList.add("active");
+        }
+    }
+}
 </script>
 
 </body>
