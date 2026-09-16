@@ -233,13 +233,13 @@
     </div>
   </div>
 
-  <!-- MODAL BINGO DETECTADO CON CARTÓN VISUAL -->
+  <!-- MODAL BINGO DETECTADO -->
   <div id="modalGanador" class="modal-overlay hidden">
     <div class="modal-content">
       <h2>🎉 ¡BINGO DETECTADO! 🎉</h2>
       <p id="modalGanadorTexto" style="font-size: 16px; color: #fff; margin-bottom: 12px; font-weight: bold;"></p>
       
-      <!-- Contenedor del Cartón Ganador -->
+      <!-- Contenedor del Cartón Ganador (Solo visible para Admin) -->
       <div id="modalCartonGanadorDisplay" style="margin-bottom: 16px;"></div>
 
       <button class="btn btn-primary" onclick="cerrarModalGanador()">Entendido / Continuar</button>
@@ -293,6 +293,7 @@
     BANCO_CARTONES[id] = generarCarton(id * 777);
   }
 
+  let esAdmin = false; // Control de Rol
   let miNombre = "";
   let miControl = "";
   let misCartonesIDs = JSON.parse(localStorage.getItem('misCartonesIDs') || '[]');
@@ -324,6 +325,7 @@
     const ctrl = document.getElementById('inputControl').value.trim();
     if(!nom) return alert("Por favor ingresa tu nombre.");
 
+    esAdmin = false;
     miNombre = nom;
     miControl = ctrl || Math.floor(100000 + Math.random() * 900000);
 
@@ -337,6 +339,7 @@
   window.accesoAdmin = function() {
     const pass = prompt("Clave de Administradora:");
     if(pass === "1234") {
+      esAdmin = true;
       document.getElementById('pantalla-inicio').classList.add('hidden');
       document.getElementById('pantalla-admin').classList.remove('hidden');
     } else if(pass) {
@@ -425,7 +428,6 @@
     if(confirm("¿Segura que deseas reiniciar la partida? Esto borrará también tus cartones locales de prueba.")) {
       if(autoCantoInterval) window.toggleCantoAutomatico();
       
-      // Limpiar memoria local de cartones viejos de prueba
       localStorage.clear();
       misCartonesIDs = [];
 
@@ -589,7 +591,14 @@
         if(autoCantoInterval) window.toggleCantoAutomatico();
         
         document.getElementById('modalGanadorTexto').innerText = `¡El Cartón #${id} de ${info.nombre} ha cantado BINGO!`;
-        document.getElementById('modalCartonGanadorDisplay').innerHTML = generarHTMLCarton(id, carton);
+        
+        // CONDICIONAL: Solo dibuja el cartón si es Administradora
+        if (esAdmin) {
+          document.getElementById('modalCartonGanadorDisplay').innerHTML = generarHTMLCarton(id, carton);
+        } else {
+          document.getElementById('modalCartonGanadorDisplay').innerHTML = "";
+        }
+
         document.getElementById('modalGanador').classList.remove('hidden');
       }
     });
