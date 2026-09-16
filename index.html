@@ -353,7 +353,41 @@
     function renderTablero75() {
       const t = document.getElementById('grid-tablero-75');
       t.innerHTML = '';
-      for(let i=1; i<=75; i++) {
+      for(let i=1; i<=75; i++)verificarGanadores(); {function verificarGanadores() {
+  if (bolasCantadas.length === 0) return;
+
+  const elFig = document.getElementById('lbl-figura');
+  const figuraActiva = elFig ? elFig.innerText : "Cartón Lleno";
+
+  Object.keys(cartonesOcupados).forEach(numC => {
+    const nums = generarNumerosCarton(parseInt(numC));
+    const nombreJugador = cartonesOcupados[numC];
+    
+    let gano = false;
+
+    if (figuraActiva.includes("Cuatro Esquinas")) {
+      const esquinas = [0, 4, 20, 24];
+      gano = esquinas.every(idx => bolasCantadas.includes(nums[idx]) || nums[idx] === '★');
+    } 
+    else if (figuraActiva.includes("Cartón Lleno")) {
+      gano = nums.every(n => bolasCantadas.includes(n) || n === '★');
+    }
+    else if (figuraActiva.includes("Línea Horizontal")) {
+      for (let f = 0; f < 5; f++) {
+        let filaCompleta = true;
+        for (let c = 0; c < 5; c++) {
+          let val = nums[f * 5 + c];
+          if (!bolasCantadas.includes(val) && val !== '★') filaCompleta = false;
+        }
+        if (filaCompleta) { gano = true; break; }
+      }
+    }
+
+    if (gano) {
+      alert(`🎉 ¡BINGO! El Cartón #${numC} de ${nombreJugador} ha GANADO (${figuraActiva})!`);
+    }
+  });
+}
         t.innerHTML += `<div class="num-75" id="t75-${i}">${i}</div>`;
       }
     }
