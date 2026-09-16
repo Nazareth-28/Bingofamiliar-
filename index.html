@@ -282,7 +282,11 @@
     let seleccionados = [];
     let miNombre = "";
     let intervaloAuto = null;
-
+    let ganadorNotificado = false;
+window.cambiarFigura = function(nuevaFigura) {
+  set(ref(db, 'partida/figura'), nuevaFigura);
+};
+    
     onValue(ref(db, 'partida/bolas'), (snapshot) => {
       const data = snapshot.val();
       bolasCantadas = data ? Object.values(data) : [];
@@ -392,7 +396,7 @@
       }
     }
 
-    function actualizarJuego() {
+    function actualizarJuego()  {
       const ultima = bolasCantadas.length > 0 ? bolasCantadas[bolasCantadas.length-1] : '--';
       document.getElementById('bola-actual-num').innerText = ultima;
 
@@ -418,6 +422,7 @@
           if(bolasCantadas.includes(i)) el.classList.add('cantado');
           else el.classList.remove('cantado');
         }
+        verificarGanadores();
       }
 
       const containerMC = document.getElementById('container-mis-cartones');
@@ -552,8 +557,44 @@
         if (intervaloAuto) clearInterval(intervaloAuto);
         set(ref(db, 'partida/bolas'), null);
         set(ref(db, 'cartonesOcupados'), null);
+        ganadorNotificado = false;
       }
     };
+    let ganadorNotificado = false;
+
+function verificarGanadores() {
+  if (bolasCantadas.length === 0 || ganadorNotificado) return;
+
+  const elFig = document.getElementById('lbl-figura');
+  const figuraActiva = elFig ? elFig.innerText : "Cuatro Esquinas";
+
+  Object.keys(cartonesOcupados).forEach(numC => {
+    const nums = generarNumerosCarton(parseInt(numC));
+    const nombreJugador = cartonesOcupados[numC];
+    let gano = false;
+
+    if (figuraActiva.includes("Cuatro Esquinas")) {
+      const esquinas = [0, 4, 20, 24];
+      gano = esquinas.every(idx => bolasCantadas.includes(nums[idx]) || nums[idx] === '★');
+    } else if (figuraActiva.includes("Cartón Lleno")) {
+      gano = nums.every(n => bolasCantadas.includes(n) || n === '★');
+    } else if (figuraActiva.includes("Línea Horizontal")) {
+      for (let f = 0; f < 5; f++) {
+        let filaCompleta = true;
+        for (let c = 0; c < 5; c++) {
+          let val = nums[f * 5 + c];
+          if (!bolasCantadas.includes(val) && val !== '★') filaCompleta = false;
+        }
+        if (filaCompleta) { gano = true; break; }
+      }
+    }
+
+    if (gano) {
+      ganadorNotificado = true;
+      alert(`🎉 ¡BINGO! El Cartón #${numC} de ${nombreJugador} ha GANADO con ${figuraActiva}!`);
+    }
+  });
+}
   </script>
 </body>
 </html>
