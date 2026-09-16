@@ -367,7 +367,17 @@
       bolasCantadas.slice(-5).reverse().forEach(b => {
         containerU.innerHTML += `<div class="bola-mini">${b}</div>`;
       });
+// Actualizar visor del administrador
+      const elAdmBola = document.getElementById('adm-bola-actual');
+      if (elAdmBola) elAdmBola.innerText = ultima;
 
+      const containerAdmU = document.getElementById('adm-container-ultimas');
+      if (containerAdmU) {
+        containerAdmU.innerHTML = '';
+        bolasCantadas.slice(-5).reverse().forEach(b => {
+          containerAdmU.innerHTML += `<div class="bola-mini">${b}</div>`;
+        });
+      }
       for(let i=1; i<=75; i++) {
         const el = document.getElementById(`t75-${i}`);
         if(el) {
