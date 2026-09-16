@@ -21,7 +21,6 @@
     body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; padding: 12px; }
     .container { width: 100%; max-width: 480px; margin: 0 auto; }
 
-    /* Header Design */
     .header-title { text-align: center; margin-bottom: 20px; }
     .header-title h1 {
       font-size: 32px;
@@ -29,16 +28,13 @@
       background: linear-gradient(135deg, #ff2a85 0%, #ff73fa 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 20px rgba(255, 42, 133, 0.4);
       margin-bottom: 4px;
     }
     .header-title p { font-size: 13px; color: var(--text-muted); font-weight: 500; }
 
-    /* Cards & Containers */
     .card { background: var(--bg-card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
     .card-title { font-size: 22px; font-weight: 800; color: var(--accent-yellow); text-align: center; margin-bottom: 16px; }
 
-    /* Forms & Inputs */
     .form-group { margin-bottom: 14px; }
     .form-control {
       width: 100%;
@@ -49,11 +45,8 @@
       color: #fff;
       font-size: 15px;
       outline: none;
-      transition: all 0.2s;
     }
-    .form-control:focus { border-color: var(--accent-pink); box-shadow: 0 0 0 3px rgba(255, 42, 133, 0.2); }
 
-    /* Buttons */
     .btn {
       width: 100%;
       padding: 14px;
@@ -62,26 +55,23 @@
       font-weight: 700;
       font-size: 16px;
       cursor: pointer;
-      transition: transform 0.1s, opacity 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
     }
-    .btn:active { transform: scale(0.98); }
-    .btn-primary { background: linear-gradient(135deg, #d946ef, #8b5cf6); color: white; box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3); }
+    .btn-primary { background: linear-gradient(135deg, #d946ef, #8b5cf6); color: white; }
     .btn-secondary { background: #334155; color: white; margin-top: 10px; }
-    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
     .btn-danger { background: #ef4444; color: white; }
     .btn-warning { background: #f59e0b; color: white; }
 
-    /* Top Bar User Info */
     .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .user-greeting { font-size: 24px; font-weight: 900; color: var(--accent-yellow); }
     .control-id { font-size: 12px; color: var(--text-muted); }
     .badge-figura { background: rgba(255, 42, 133, 0.15); border: 1px solid var(--accent-pink); color: #ff65a3; padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; text-align: center; }
 
-    /* Ball Display Area */
+    /* Componente de Bola Cantada */
     .ball-container { background: var(--bg-card); border-radius: 20px; padding: 20px; text-align: center; border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 16px; }
     .ball-title { font-size: 13px; font-weight: 800; color: var(--accent-yellow); letter-spacing: 0.5px; margin-bottom: 12px; }
     .main-ball-flex { display: flex; align-items: center; justify-content: space-around; }
@@ -97,7 +87,6 @@
       width: 38px; height: 38px; border-radius: 50%;
       background: #8b5cf6; color: white; font-weight: 800; font-size: 14px;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
     /* Cartón Grid */
@@ -109,24 +98,22 @@
       background: #1e293b; border-radius: 8px; padding: 10px 0; font-size: 14px; font-weight: 700; color: #cbd5e1;
       display: flex; align-items: center; justify-content: center; min-height: 38px;
     }
-    .carton-cell.marked { background: var(--accent-yellow); color: #000; font-weight: 900; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+    .carton-cell.marked { background: var(--accent-yellow); color: #000; font-weight: 900; }
     .carton-cell.free { background: #3b82f6; color: white; font-size: 16px; }
 
-    /* Market Grid */
-    .market-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+    .market-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; }
     .market-btn { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 10px 0; color: var(--accent-yellow); font-weight: 800; cursor: pointer; text-align: center; }
-    .market-btn.selected { background: var(--accent-pink); color: white; border-color: #ff65a3; }
+    .market-btn.selected { background: var(--accent-pink); color: white; }
     .market-btn.taken { background: #0f172a; color: #475569; border-color: #1e293b; cursor: not-allowed; opacity: 0.5; }
 
-    /* Tablero General (1-75) */
     .tablero-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
     .tablero-cell { background: #1e293b; border-radius: 4px; font-size: 10px; font-weight: 700; padding: 6px 0; text-align: center; color: #64748b; }
     .tablero-cell.active { background: var(--accent-green); color: white; font-weight: 900; }
 
-    /* Winner Modal */
+    /* Modal Ganador */
     .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
-    .modal-content { background: var(--bg-card); border-radius: 20px; padding: 24px; text-align: center; border: 2px solid var(--accent-pink); width: 100%; max-width: 400px; }
-    .modal-content h2 { font-size: 28px; color: var(--accent-yellow); margin-bottom: 12px; }
+    .modal-content { background: var(--bg-card); border-radius: 20px; padding: 20px; text-align: center; border: 2px solid var(--accent-pink); width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+    .modal-content h2 { font-size: 26px; color: var(--accent-yellow); margin-bottom: 8px; }
 
     .hidden { display: none !important; }
   </style>
@@ -135,13 +122,12 @@
 
 <div class="container">
   
-  <!-- HEADER GLOBAL -->
   <div class="header-title">
     <h1>Bingo Lineal</h1>
     <p>El sistema oficial en tiempo real con voz cantante</p>
   </div>
 
-  <!-- PANTALLA 1: REGISTRO DE JUGADORA -->
+  <!-- PANTALLA 1: REGISTRO -->
   <div id="pantalla-inicio" class="card">
     <div class="card-title">Registro de Jugadora</div>
     <div class="form-group">
@@ -150,16 +136,12 @@
     <div class="form-group">
       <input type="text" id="inputControl" class="form-control" placeholder="Número de Control (Ej: 26045131)">
     </div>
-    <div class="form-group">
-      <input type="text" id="inputCodigo" class="form-control" placeholder="Código de Acceso de Sala">
-    </div>
     <button class="btn btn-primary" onclick="entrarAlJuego()">Entrar al Juego</button>
     <button class="btn btn-secondary" onclick="accesoAdmin()">🔑 Acceso Administradora</button>
   </div>
 
   <!-- PANTALLA 2: VISTA DE JUGADORA -->
   <div id="pantalla-juego" class="hidden">
-    <!-- Top Bar -->
     <div class="card" style="padding: 14px;">
       <div class="top-bar">
         <div>
@@ -167,49 +149,41 @@
           <div class="control-id">Control ID: <span id="userControl">---</span></div>
         </div>
         <div class="badge-figura">
-          Figura: <br><strong id="figuraActualText">Cartón Lleno (Apagón)</strong>
+          Figura: <br><strong class="txtFiguraActual">Cartón Lleno (Apagón)</strong>
         </div>
       </div>
     </div>
 
-    <!-- Bola Actual Area -->
+    <!-- Bola Gigante Jugadora -->
     <div class="ball-container">
       <div class="ball-title">🔥 BOLA ACTUAL EN JUEGO</div>
       <div class="main-ball-flex">
-        <div class="main-ball" id="bolaActualDisplay">--</div>
+        <div class="main-ball displayBolaActual">--</div>
         <div>
           <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Últimas salidas:</div>
-          <div class="recent-balls" id="ultimasBolasContainer">
-            <div class="mini-ball">--</div>
-            <div class="mini-ball">--</div>
-            <div class="mini-ball">--</div>
+          <div class="recent-balls containerUltimasBolas">
+            <div class="mini-ball">--</div><div class="mini-ball">--</div><div class="mini-ball">--</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Mis Cartones -->
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-        <h3 style="font-size: 18px; color: var(--accent-yellow);">Tus Cartones en Juego</h3>
-      </div>
+      <h3 style="font-size: 18px; color: var(--accent-yellow); margin-bottom:12px;">Tus Cartones en Juego</h3>
       <div id="misCartonesContainer">
         <p style="font-size: 13px; color: var(--text-muted); text-align: center; padding: 10px;">Aún no tienes cartones cargados. Selecciona en el mercado de abajo y presiona "Cargar".</p>
       </div>
     </div>
 
-    <!-- Tablero General 1-75 -->
     <div class="card">
       <h3 style="font-size: 16px; color: var(--accent-pink); margin-bottom: 10px;">Tablero General (1-75)</h3>
       <div class="tablero-grid" id="tableroJugador"></div>
     </div>
 
-    <!-- Seleccionar Cartones (Mercado) -->
     <div class="card">
       <h3 style="font-size: 18px; color: var(--accent-pink); margin-bottom: 4px;">Selecciona tus Cartones</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Toca los cartones que deseas y presiona cargar.</p>
       <div class="market-grid" id="mercadoCartones"></div>
-      <button class="btn btn-success" style="margin-top: 14px;" onclick="cargarCartonesSeleccionados()">🛒 Cargar / Confirmar Mis Cartones</button>
+      <button class="btn btn-success" style="margin-top: 14px;" onclick="cargarCartonesSeleccionados()">🛒 Cargar Mis Cartones</button>
     </div>
   </div>
 
@@ -218,13 +192,25 @@
     <div class="card">
       <div class="card-title">👑 Panel Administradora</div>
       
-      <!-- Controles de Canto -->
+      <!-- BOLA GIGANTE ADMIN -->
+      <div class="ball-container" style="background: #0f172a;">
+        <div class="ball-title">🔥 BOLA ACTUAL EN JUEGO</div>
+        <div class="main-ball-flex">
+          <div class="main-ball displayBolaActual">--</div>
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Últimas salidas:</div>
+            <div class="recent-balls containerUltimasBolas">
+              <div class="mini-ball">--</div><div class="mini-ball">--</div><div class="mini-ball">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div style="display:flex; gap: 8px; margin-bottom: 12px;">
         <button class="btn btn-primary" onclick="cantarSiguienteBola()">🎲 Cantar Bola</button>
         <button class="btn btn-warning" id="btnAutoCanto" onclick="toggleCantoAutomatico()">▶️ Canto Auto</button>
       </div>
 
-      <!-- Configuración de Figura -->
       <div class="form-group">
         <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom:4px;">Figura Actual:</label>
         <select id="selectFiguraAdmin" class="form-control" onchange="cambiarFigura(this.value)">
@@ -235,38 +221,37 @@
         </select>
       </div>
 
-      <button class="btn btn-danger" style="margin-bottom: 16px;" onclick="reiniciarPartida()">🔄 Reiniciar Partida</button>
+      <button class="btn btn-danger" style="margin-bottom: 16px;" onclick="reiniciarPartida()">🔄 Reiniciar Partida Completa</button>
 
-      <!-- Lista de Jugadores / Cartones Ocupados -->
       <h4 style="font-size: 15px; color: var(--accent-yellow); margin-bottom: 8px;">Cartones Vendidos:</h4>
-      <div id="listaAdminCartones" style="max-height: 200px; overflow-y: auto; font-size: 13px;"></div>
+      <div id="listaAdminCartones" style="max-height: 150px; overflow-y: auto; font-size: 13px;"></div>
     </div>
 
-    <!-- Tablero General Admin -->
     <div class="card">
       <h3 style="font-size: 16px; color: var(--accent-pink); margin-bottom: 10px;">Control de Tablero</h3>
       <div class="tablero-grid" id="tableroAdmin"></div>
     </div>
   </div>
 
-  <!-- MODAL DE GANADOR -->
+  <!-- MODAL BINGO DETECTADO CON CARTÓN VISUAL -->
   <div id="modalGanador" class="modal-overlay hidden">
     <div class="modal-content">
       <h2>🎉 ¡BINGO DETECTADO! 🎉</h2>
-      <p id="modalGanadorTexto" style="font-size: 16px; color: #fff; margin-bottom: 16px;"></p>
-      <div id="modalGanadorCartonContainer"></div>
-      <button class="btn btn-primary" style="margin-top: 16px;" onclick="cerrarModalGanador()">Entendido / Continuar</button>
+      <p id="modalGanadorTexto" style="font-size: 16px; color: #fff; margin-bottom: 12px; font-weight: bold;"></p>
+      
+      <!-- Contenedor del Cartón Ganador -->
+      <div id="modalCartonGanadorDisplay" style="margin-bottom: 16px;"></div>
+
+      <button class="btn btn-primary" onclick="cerrarModalGanador()">Entendido / Continuar</button>
     </div>
   </div>
 
 </div>
 
-<!-- FIREBASE SDK & GAME LOGIC -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  // Configuración de Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyA7odiafJgukMu3S3WygWjtnQ-EXAMPLE",
     authDomain: "bingofamiliar-f99e0.firebaseapp.com",
@@ -280,7 +265,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // Generador de Cartones Estándar B I N G O (75 bolas)
   function generarCarton(seed) {
     const getCol = (min, max) => {
       let nums = [];
@@ -295,7 +279,7 @@
     let g = getCol(46, 60);
     let o = getCol(61, 75);
 
-    n[2] = "★"; // Centro libre
+    n[2] = "★";
 
     let carton = [];
     for(let r=0; r<5; r++) {
@@ -304,30 +288,27 @@
     return carton;
   }
 
-  // Pre-generar 100 cartones estáticos
   const BANCO_CARTONES = {};
   for(let id=1; id<=100; id++) {
     BANCO_CARTONES[id] = generarCarton(id * 777);
   }
 
-  // Estado Local
   let miNombre = "";
   let miControl = "";
-  let misCartonesIDs = [];
+  let misCartonesIDs = JSON.parse(localStorage.getItem('misCartonesIDs') || '[]');
   let cartonesSeleccionadosTmp = [];
   let bolasCantadas = [];
   let cartonesOcupados = {};
   let figuraActual = "Cartón Lleno (Apagón)";
   let autoCantoInterval = null;
 
-  // --- ESCUCHADORES DE TIEMPO REAL ---
   onValue(ref(db, 'partida'), (snapshot) => {
     const data = snapshot.val() || {};
     bolasCantadas = data.bolas ? Object.values(data.bolas) : [];
     figuraActual = data.figura || "Cartón Lleno (Apagón)";
     cartonesOcupados = data.cartonesOcupados || {};
 
-    document.getElementById('figuraActualText').innerText = figuraActual;
+    document.querySelectorAll('.txtFiguraActual').forEach(el => el.innerText = figuraActual);
     document.getElementById('selectFiguraAdmin').value = figuraActual;
 
     actualizarPantallaBolas();
@@ -338,7 +319,6 @@
     verificarGanadoresAuto();
   });
 
-  // --- FUNCIONES EXPUESTAS AL WINDOW ---
   window.entrarAlJuego = function() {
     const nom = document.getElementById('inputNombre').value.trim();
     const ctrl = document.getElementById('inputControl').value.trim();
@@ -384,9 +364,10 @@
       cartonesOcupados[id] = { nombre: miNombre, control: miControl };
     });
 
+    localStorage.setItem('misCartonesIDs', JSON.stringify(misCartonesIDs));
     set(ref(db, 'partida/cartonesOcupados'), cartonesOcupados);
     cartonesSeleccionadosTmp = [];
-    alert("¡Cartones cargados con éxito! Ya quedaron asignados a tu cuenta.");
+    alert("¡Cartones cargados con éxito!");
   };
 
   window.cantarSiguienteBola = function() {
@@ -400,7 +381,6 @@
     bolasCantadas.push(nuevaBola);
     set(ref(db, 'partida/bolas'), bolasCantadas);
 
-    // Cantar bola con voz
     if ('speechSynthesis' in window) {
       let msg = new SpeechSynthesisUtterance("Bola " + nuevaBola);
       msg.lang = 'es-ES';
@@ -435,20 +415,27 @@
   };
 
   window.eliminarCartonAdmin = function(id) {
-    if(confirm(`¿Deseas liberar/eliminar el Cartón #${id}?`)) {
+    if(confirm(`¿Deseas liberar el Cartón #${id}?`)) {
       delete cartonesOcupados[id];
       set(ref(db, 'partida/cartonesOcupados'), cartonesOcupados);
     }
   };
 
   window.reiniciarPartida = function() {
-    if(confirm("¿Segura que deseas reiniciar toda la partida?")) {
+    if(confirm("¿Segura que deseas reiniciar la partida? Esto borrará también tus cartones locales de prueba.")) {
       if(autoCantoInterval) window.toggleCantoAutomatico();
+      
+      // Limpiar memoria local de cartones viejos de prueba
+      localStorage.clear();
+      misCartonesIDs = [];
+
       set(ref(db, 'partida'), {
         bolas: [],
         figura: "Cartón Lleno (Apagón)",
         cartonesOcupados: {}
       });
+      
+      alert("Partida reiniciada y memoria local limpiada.");
     }
   };
 
@@ -456,18 +443,18 @@
     document.getElementById('modalGanador').classList.add('hidden');
   };
 
-  // --- RENDERIZADO DE INTERFAZ ---
   function actualizarPantallaBolas() {
     const ultima = bolasCantadas[bolasCantadas.length - 1] || "--";
-    document.getElementById('bolaActualDisplay').innerText = ultima;
+    document.querySelectorAll('.displayBolaActual').forEach(el => el.innerText = ultima);
 
     const ultimas = bolasCantadas.slice(-4, -1).reverse();
-    const container = document.getElementById('ultimasBolasContainer');
-    container.innerHTML = "";
-    for(let i=0; i<3; i++) {
-      const val = ultimas[i] || "--";
-      container.innerHTML += `<div class="mini-ball">${val}</div>`;
-    }
+    document.querySelectorAll('.containerUltimasBolas').forEach(container => {
+      container.innerHTML = "";
+      for(let i=0; i<3; i++) {
+        const val = ultimas[i] || "--";
+        container.innerHTML += `<div class="mini-ball">${val}</div>`;
+      }
+    });
   }
 
   function actualizarTableros() {
@@ -487,15 +474,13 @@
     if(!grid) return;
     grid.innerHTML = "";
 
-    let disponibles = 0;
     for(let id=1; id<=100; id++) {
       const ocupado = cartonesOcupados[id];
       let stateClass = "";
       if(ocupado) {
         stateClass = "taken";
-      } else {
-        disponibles++;
-        if(cartonesSeleccionadosTmp.includes(id)) stateClass = "selected";
+      } else if(cartonesSeleccionadosTmp.includes(id)) {
+        stateClass = "selected";
       }
       grid.innerHTML += `<button class="market-btn ${stateClass}" onclick="seleccionarCartonMercado(${id})">#${id}</button>`;
     }
@@ -513,39 +498,43 @@
     container.innerHTML = "";
     misCartonesIDs.forEach(id => {
       const carton = BANCO_CARTONES[id];
-      let gridHTML = `
-        <div class="bingo-header-cell">B</div>
-        <div class="bingo-header-cell">I</div>
-        <div class="bingo-header-cell">N</div>
-        <div class="bingo-header-cell">G</div>
-        <div class="bingo-header-cell">O</div>
-      `;
-
-      let marcados = 0;
-      let faltantes = [];
-
-      carton.forEach((val) => {
-        let isMarked = val === "★" || bolasCantadas.includes(val);
-        if(isMarked) marcados++;
-        else faltantes.push(val);
-
-        let cellClass = isMarked ? (val === "★" ? "free" : "marked") : "";
-        gridHTML += `<div class="carton-cell ${cellClass}">${val}</div>`;
-      });
-
-      container.innerHTML += `
-        <div class="carton-card">
-          <div class="carton-header">
-            <span>Cartón #${id}</span>
-            <span style="color:var(--accent-green)">Marcados: ${marcados}/25</span>
-          </div>
-          <div class="carton-grid">${gridHTML}</div>
-          <div style="font-size: 11px; color: var(--accent-pink); margin-top: 8px;">
-            Le falta(n): ${faltantes.length > 0 ? faltantes.map(n => "#"+n).join(", ") : "¡BINGO!"}
-          </div>
-        </div>
-      `;
+      container.innerHTML += generarHTMLCarton(id, carton);
     });
+  }
+
+  function generarHTMLCarton(id, carton) {
+    let gridHTML = `
+      <div class="bingo-header-cell">B</div>
+      <div class="bingo-header-cell">I</div>
+      <div class="bingo-header-cell">N</div>
+      <div class="bingo-header-cell">G</div>
+      <div class="bingo-header-cell">O</div>
+    `;
+
+    let marcados = 0;
+    let faltantes = [];
+
+    carton.forEach((val) => {
+      let isMarked = val === "★" || bolasCantadas.includes(val);
+      if(isMarked) marcados++;
+      else faltantes.push(val);
+
+      let cellClass = isMarked ? (val === "★" ? "free" : "marked") : "";
+      gridHTML += `<div class="carton-cell ${cellClass}">${val}</div>`;
+    });
+
+    return `
+      <div class="carton-card">
+        <div class="carton-header">
+          <span>Cartón #${id}</span>
+          <span style="color:var(--accent-green)">Marcados: ${marcados}/25</span>
+        </div>
+        <div class="carton-grid">${gridHTML}</div>
+        <div style="font-size: 11px; color: var(--accent-pink); margin-top: 8px;">
+          Le falta(n): ${faltantes.length > 0 ? faltantes.map(n => "#"+n).join(", ") : "¡BINGO!"}
+        </div>
+      </div>
+    `;
   }
 
   function renderAdminCartones() {
@@ -564,7 +553,7 @@
       container.innerHTML += `
         <div style="display:flex; justify-content:space-between; align-items:center; background:#1e293b; padding:8px 12px; border-radius:8px; margin-bottom:4px;">
           <span><strong>Cartón #${id}</strong> - ${info.nombre}</span>
-          <button class="btn btn-danger" style="width:auto; padding:4px 8px; font-size:11px;" onclick="eliminarCartonAdmin(${id})">Eliminar</button>
+          <button class="btn btn-danger" style="width:auto; padding:4px 8px; font-size:11px;" onclick="eliminarCartonAdmin(${id})">Liberar</button>
         </div>
       `;
     });
@@ -573,23 +562,34 @@
   function verificarGanadoresAuto() {
     if(bolasCantadas.length === 0) return;
 
+    const isMarked = (val) => val === "★" || bolasCantadas.includes(val);
+
     Object.keys(cartonesOcupados).forEach(id => {
       const carton = BANCO_CARTONES[id];
       const info = cartonesOcupados[id];
-
       let gano = false;
 
       if(figuraActual === "Cartón Lleno (Apagón)") {
-        gano = carton.every(val => val === "★" || bolasCantadas.includes(val));
+        gano = carton.every(isMarked);
       } else if(figuraActual === "Cuatro Esquinas") {
-        const esquinas = [0, 4, 20, 24];
-        gano = esquinas.every(idx => carton[idx] === "★" || bolasCantadas.includes(carton[idx]));
+        gano = [0, 4, 20, 24].every(idx => isMarked(carton[idx]));
+      } else if(figuraActual === "Línea Horizontal") {
+        for(let r=0; r<5; r++) {
+          let fila = [carton[r*5], carton[r*5+1], carton[r*5+2], carton[r*5+3], carton[r*5+4]];
+          if(fila.every(isMarked)) { gano = true; break; }
+        }
+      } else if(figuraActual === "Línea Vertical") {
+        for(let c=0; c<5; c++) {
+          let col = [carton[c], carton[c+5], carton[c+10], carton[c+15], carton[c+20]];
+          if(col.every(isMarked)) { gano = true; break; }
+        }
       }
 
       if(gano) {
-        if(autoCantoInterval) window.toggleCantoAutomatico(); // Detener canto auto si hay ganador
+        if(autoCantoInterval) window.toggleCantoAutomatico();
         
         document.getElementById('modalGanadorTexto').innerText = `¡El Cartón #${id} de ${info.nombre} ha cantado BINGO!`;
+        document.getElementById('modalCartonGanadorDisplay').innerHTML = generarHTMLCarton(id, carton);
         document.getElementById('modalGanador').classList.remove('hidden');
       }
     });
