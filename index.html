@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bingo Lineal Vizzio</title>
   <style>
+    * { box-sizing: border-box; }
     body {
       background-color: #0f172a;
       color: #ffffff;
@@ -16,23 +17,22 @@
       min-height: 100vh;
       margin: 0;
       padding: 15px;
-      box-sizing: border-box;
     }
     .card {
       background-color: #1e293b;
-      padding: 25px;
+      padding: 20px;
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
       text-align: center;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
     }
     h1 { color: #ec4899; margin-bottom: 5px; }
     p { color: #94a3b8; font-size: 14px; margin-top: 0; }
     .btn {
       width: 100%;
       padding: 14px;
-      margin: 10px 0;
+      margin: 8px 0;
       border: none;
       border-radius: 10px;
       font-size: 16px;
@@ -41,10 +41,11 @@
     }
     .btn-primary { background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; }
     .btn-secondary { background-color: #334155; color: white; }
-    input {
-      width: 90%;
+    .btn-danger { background-color: #ef4444; color: white; }
+    input, select {
+      width: 100%;
       padding: 12px;
-      margin: 10px 0;
+      margin: 8px 0;
       border-radius: 8px;
       border: 1px solid #475569;
       background-color: #0f172a;
@@ -53,9 +54,71 @@
       font-size: 16px;
     }
     .hidden { display: none !important; }
-    .board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; }
-    .cell { background: white; color: black; font-weight: bold; padding: 10px; border-radius: 5px; }
-    .header-cell { background: #0284c7; color: white; }
+    
+    /* ESTILOS DEL CARTÓN */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-top: 15px;
+    }
+    .cell {
+      background: #ffffff;
+      color: #0f172a;
+      font-weight: bold;
+      padding: 12px 2px;
+      border-radius: 6px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, color 0.3s;
+    }
+    .header-cell { background: #0284c7; color: white; font-size: 20px; }
+    .free-cell { background: #22c55e; color: white; font-size: 12px; }
+    
+    /* BOLA CANTADA MARCADA EN EL CARTÓN DE LA JUGADORA */
+    .cell.marcada {
+      background-color: #ec4899 !important;
+      color: #ffffff !important;
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #ec4899;
+    }
+
+    /* HISTORIAL Y PANTALLA ADMIN */
+    .bola-actual {
+      font-size: 48px;
+      font-weight: bold;
+      color: #38bdf8;
+      background: #0f172a;
+      padding: 15px;
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px auto;
+      border: 3px solid #38bdf8;
+    }
+    .historial {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: center;
+      max-height: 100px;
+      overflow-y: auto;
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .bola-historial {
+      background: #334155;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -63,7 +126,7 @@
   <!-- PANTALLA PRINCIPAL -->
   <div id="menu-view" class="card">
     <h1>Bingo Lineal</h1>
-    <p>El sistema oficial en tiempo real con voz cantante</p>
+    <p>El sistema oficial en tiempo real</p>
     <button class="btn btn-primary" onclick="verJugadora()">🎮 Entrar como Jugadora</button>
     <button class="btn btn-secondary" onclick="mostrarLoginAdmin()">🔑 Acceso Administradora</button>
   </div>
@@ -71,7 +134,7 @@
   <!-- LOGIN ADMINISTRADOR -->
   <div id="admin-login-view" class="card hidden">
     <h2>Acceso Administradora</h2>
-    <p>Ingresa la clave para acceder al panel de control:</p>
+    <p>Ingresa la clave de control:</p>
     <input type="password" id="admin-pass" placeholder="Contraseña">
     <button class="btn btn-primary" onclick="loginAdmin()">Ingresar</button>
     <button class="btn btn-secondary" onclick="volverMenu()">← Volver al Menú</button>
@@ -79,20 +142,19 @@
 
   <!-- VISTA JUGADORA -->
   <div id="player-view" class="card hidden">
-    <h2>¡Bienvenida al Bingo!</h2>
-    <p>Selecciona tu número de cartón asignado:</p>
-    <select id="carton-select" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px;">
-      <option value="1">Cartón #1</option>
-      <option value="2">Cartón #2</option>
+    <h2>¡Tu Cartón de Bingo!</h2>
+    <label>Número de cartón asignado:</label>
+    <select id="carton-select" onchange="generarCarton(this.value)">
+      <!-- Opciones del 1 al 100 -->
     </select>
     
-    <div class="board">
-      <div class="cell header-cell">B</div><div class="cell header-cell">I</div><div class="cell header-cell">N</div><div class="cell header-cell">G</div><div class="cell header-cell">O</div>
-      <div class="cell">2</div><div class="cell">18</div><div class="cell">34</div><div class="cell">50</div><div class="cell">66</div>
-      <div class="cell">5</div><div class="cell">21</div><div class="cell">37</div><div class="cell">53</div><div class="cell">69</div>
-      <div class="cell">8</div><div class="cell">24</div><div class="cell" style="background:#22c55e; color:white;">FREE</div><div class="cell">56</div><div class="cell">72</div>
-      <div class="cell">11</div><div class="cell">27</div><div class="cell">43</div><div class="cell">59</div><div class="cell">75</div>
-      <div class="cell">14</div><div class="cell">30</div><div class="cell">31</div><div class="cell">47</div><div class="cell">63</div>
+    <div style="margin: 10px 0;">
+      <span>Última bola: </span>
+      <strong id="ultima-bola-display" style="color:#ec4899; font-size:20px;">--</strong>
+    </div>
+
+    <div class="board" id="carton-board">
+      <!-- Celdas del cartón -->
     </div>
     <br>
     <button class="btn btn-secondary" onclick="volverMenu()">← Volver al Menú</button>
@@ -100,14 +162,20 @@
 
   <!-- VISTA ADMINISTRADORA -->
   <div id="admin-panel-view" class="card hidden">
-    <h2>Panel de Administradora</h2>
-    <p>Cantar número en tiempo real:</p>
-    <input type="number" id="numero-cantar" placeholder="Ej. 15" min="1" max="75">
-    <button class="btn btn-primary" onclick="enviarNumero()">📢 Cantar Número</button>
+    <h2>Panel de Cantante</h2>
+    <div class="bola-actual" id="bola-admin">--</div>
+    
+    <input type="number" id="numero-cantar" placeholder="Número (1-75)" min="1" max="75">
+    <button class="btn btn-primary" onclick="cantarBola()">📢 Cantar Bola</button>
+    
+    <p style="margin-top:15px; font-weight:bold;">Historial de Cantadas:</p>
+    <div class="historial" id="historial-admin"></div>
+    <br>
+    <button class="btn btn-danger" onclick="reiniciarPartida()">🔄 Reiniciar Bingo</button>
     <button class="btn btn-secondary" onclick="volverMenu()">← Volver al Menú</button>
   </div>
 
-  <!-- LÓGICA JAVASCRIPT & FIREBASE -->
+  <!-- LÓGICA DE FIREBASE Y MARCADO EN TIEMPO REAL -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -125,24 +193,105 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    onValue(ref(db, 'partida/ultimaBola'), (snapshot) => {
-      const numero = snapshot.val();
-      if (numero) {
-        alert("¡Nueva bola cantada!: " + numero);
-      }
+    let bolasCantadas = [];
+
+    // ESCUCHAR HISTORIAL DE BOLAS EN TIEMPO REAL
+    onValue(ref(db, 'partida/bolas'), (snapshot) => {
+      const data = snapshot.val();
+      bolasCantadas = data ? Object.values(data) : [];
+      actualizarPantallas();
     });
 
-    window.enviarNumero = function() {
-      const numInput = document.getElementById('numero-cantar');
-      if (numInput.value) {
-        set(ref(db, 'partida/ultimaBola'), numInput.value);
-        alert("Número cantado: " + numInput.value);
-        numInput.value = '';
+    window.cantarBola = function() {
+      const input = document.getElementById('numero-cantar');
+      const num = parseInt(input.value);
+      if (num >= 1 && num <= 75) {
+        if (!bolasCantadas.includes(num)) {
+          set(ref(db, 'partida/bolas/' + Date.now()), num);
+          input.value = '';
+        } else {
+          alert("Esa bola ya fue cantada.");
+        }
+      } else {
+        alert("Ingresa un número válido del 1 al 75.");
       }
     };
+
+    window.reiniciarPartida = function() {
+      if (confirm("¿Deseas reiniciar el juego y borrar las bolas cantadas?")) {
+        set(ref(db, 'partida/bolas'), null);
+      }
+    };
+
+    function actualizarPantallas() {
+      const ultima = bolasCantadas.length > 0 ? bolasCantadas[bolasCantadas.length - 1] : '--';
+      document.getElementById('ultima-bola-display').innerText = ultima;
+      document.getElementById('bola-admin').innerText = ultima;
+
+      // Actualizar Historial Admin
+      const historialContainer = document.getElementById('historial-admin');
+      historialContainer.innerHTML = '';
+      bolasCantadas.forEach(b => {
+        const span = document.createElement('span');
+        span.className = 'bola-historial';
+        span.innerText = b;
+        historialContainer.appendChild(span);
+      });
+
+      // Remarcar celdas marcadas en el cartón activo de la jugadora
+      document.querySelectorAll('.cell-num').forEach(celda => {
+        const val = parseInt(celda.innerText);
+        if (bolasCantadas.includes(val)) {
+          celda.classList.add('marcada');
+        } else {
+          celda.classList.remove('marcada');
+        }
+      });
+    }
   </script>
 
   <script>
+    // Generar Selector de Cartones (1 al 100)
+    const select = document.getElementById('carton-select');
+    for (let i = 1; i <= 100; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.innerText = `Cartón #${i}`;
+      select.appendChild(opt);
+    }
+
+    // Generador determinista de cartón según su número
+    function generarCarton(numCarton) {
+      const board = document.getElementById('carton-board');
+      board.innerHTML = '';
+      
+      const headers = ['B', 'I', 'N', 'G', 'O'];
+      headers.forEach(h => {
+        const hDiv = document.createElement('div');
+        hDiv.className = 'cell header-cell';
+        hDiv.innerText = h;
+        board.appendChild(hDiv);
+      });
+
+      // Crear celdas fijas según el ID del cartón
+      let seed = numCarton * 7;
+      for (let fila = 0; fila < 5; fila++) {
+        for (let col = 0; col < 5; col++) {
+          const div = document.createElement('div');
+          if (fila === 2 && col === 2) {
+            div.className = 'cell free-cell';
+            div.innerText = 'FREE';
+          } else {
+            div.className = 'cell cell-num';
+            let min = col * 15 + 1;
+            let val = (min + (seed + fila * 3 + col * 5) % 15);
+            div.innerText = val;
+          }
+          board.appendChild(div);
+        }
+      }
+    }
+
     function ocultarVistas() {
       document.getElementById('menu-view').classList.add('hidden');
       document.getElementById('admin-login-view').classList.add('hidden');
@@ -158,6 +307,7 @@
     function verJugadora() {
       ocultarVistas();
       document.getElementById('player-view').classList.remove('hidden');
+      generarCarton(document.getElementById('carton-select').value);
     }
 
     function mostrarLoginAdmin() {
