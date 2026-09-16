@@ -260,341 +260,129 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyA7odiafJgukMu3S3WygWjtnQPbG9AT48U",
-      authDomain: "bingofamiliar-f99e0.firebaseapp.com",
-      databaseURL: "https://bingofamiliar-f99e0-default-rtdb.firebaseio.com",
-      projectId: "bingofamiliar-f99e0",
-      storageBucket: "bingofamiliar-f99e0.firebasestorage.app",
-      messagingSenderId: "1015749396232",
-      appId: "1:1015749396232:web:92e5f8b207eefdc7a98ebd"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyA7odiafJgukMu3S3WygWj...", // Tu configuración actual de Firebase
+    authDomain: "bingofamiliar-f99e0.firebaseapp.com",
+    databaseURL: "https://bingofamiliar-f99e0-default-rtdb.firebaseio.com",
+    projectId: "bingofamiliar-f99e0",
+    storageBucket: "bingofamiliar-f99e0.appspot.com",
+    messagingSenderId: "1015749396232",
+    appId: "1:1015749396232:web:92e5f8b20..."
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    let bolasCantadas = [];
-    let cartonesOcupados = {};
-    let misCartones = [];
-    let seleccionados = [];
-    let miNombre = "";
-    let intervaloAuto = null;
-    let ganadorNotificado = false;
-window.cambiarFigura = function(nuevaFigura) {
-  set(ref(db, 'partida/figura'), nuevaFigura);
-};
-    
-    onValue(ref(db, 'partida/bolas'), (snapshot) => {
-      const data = snapshot.val();
-      bolasCantadas = data ? Object.values(data) : [];
-      actualizarJuego();
-    });
+  let bolasCantadas = [];
+  let cartonesOcupados = {};
+  let misCartones = [];
+  let seleccionados = [];
+  let miNombre = "";
+  let intervaloAuto = null;
+  let ganadorNotificado = false;
 
-    onValue(ref(db, 'partida/figura'), (snapshot) => {
-      const fig = snapshot.val() || "Cartón Lleno";
-      document.getElementById('lbl-figura').innerText = fig;
-    });
+  window.cambiarFigura = function(fig) {
+    set(ref(db, 'partida/figura'), fig);
+  };
 
-    onValue(ref(db, 'cartonesOcupados'), (snapshot) => {
-      cartonesOcupados = snapshot.val() || {};
-      renderMercado();
-      renderAdminCartones();
-    });
-
-    window.iniciarSesion = function() {
-      miNombre = document.getElementById('reg-nombre').value.trim();
-      const ctrl = document.getElementById('reg-control').value.trim();
-      if(!miNombre) { alert("Ingresa tu Nombre o Apodo"); return; }
-      
-      document.getElementById('lbl-nombre').innerText = `¡Hola, ${miNombre}!`;
-      document.getElementById('lbl-control').innerText = `Control ID: ${ctrl || '101'}`;
-      
-      document.getElementById('view-registro').classList.add('hidden');
-      document.getElementById('view-juego').classList.remove('hidden');
-      renderTablero75();
-    };
-
-    function renderMercado() {
-      const grid = document.getElementById('grid-cartones');
-      grid.innerHTML = '';
-      let disp = 0;
-      for(let i=1; i<=100; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'btn-carton';
-        btn.innerText = `#${i}`;
-        if(cartonesOcupados[i]) {
-          btn.classList.add('ocupado');
-          btn.disabled = true;
-        } else {
-          disp++;
-          if(seleccionados.includes(i)) btn.classList.add('seleccionado');
-          btn.onclick = () => {
-            if(seleccionados.includes(i)) seleccionados = seleccionados.filter(x=>x!==i);
-            else seleccionados.push(i);
-            renderMercado();
-          };
-        }
-        grid.appendChild(btn);
-      }
-      document.getElementById('txt-disponibles').innerText = `Selecciona tus Cartones (${disp} Disponibles)`;
-    }
-
-    window.confirmarCartones = function() {
-      if(seleccionados.length === 0) return alert("Selecciona al menos un cartón");
-      seleccionados.forEach(c => {
-        set(ref(db, `cartonesOcupados/${c}`), miNombre);
-        misCartones.push(c);
-      });
-      alert("¡Cartones cargados con éxito! Ya quedaron fijos en tu cuenta.");
-      document.getElementById('sec-mercado').classList.add('hidden');
-      document.getElementById('sec-mis-cartones').classList.remove('hidden');
-      actualizarJuego();
-    };
-
-    function renderTablero75() {
-      const t = document.getElementById('grid-tablero-75');
-      t.innerHTML = '';
-      for(let i=1; i<=75; i++)verificarGanadores(); {function verificarGanadores() {
-  if (bolasCantadas.length === 0) return;
-
-  const elFig = document.getElementById('lbl-figura');
-  const figuraActiva = elFig ? elFig.innerText : "Cartón Lleno";
-
-  Object.keys(cartonesOcupados).forEach(numC => {
-    const nums = generarNumerosCarton(parseInt(numC));
-    const nombreJugador = cartonesOcupados[numC];
-    
-    let gano = false;
-
-    if (figuraActiva.includes("Cuatro Esquinas")) {
-      const esquinas = [0, 4, 20, 24];
-      gano = esquinas.every(idx => bolasCantadas.includes(nums[idx]) || nums[idx] === '★');
-    } 
-    else if (figuraActiva.includes("Cartón Lleno")) {
-      gano = nums.every(n => bolasCantadas.includes(n) || n === '★');
-    }
-    else if (figuraActiva.includes("Línea Horizontal")) {
-      for (let f = 0; f < 5; f++) {
-        let filaCompleta = true;
-        for (let c = 0; c < 5; c++) {
-          let val = nums[f * 5 + c];
-          if (!bolasCantadas.includes(val) && val !== '★') filaCompleta = false;
-        }
-        if (filaCompleta) { gano = true; break; }
-      }
-    }
-
-    if (gano) {
-      alert(`🎉 ¡BINGO! El Cartón #${numC} de ${nombreJugador} ha GANADO (${figuraActiva})!`);
-    }
+  onValue(ref(db, 'partida/bolas'), (snapshot) => {
+    const data = snapshot.val();
+    bolasCantadas = data ? Object.values(data) : [];
+    actualizarJuego();
   });
-}
-        t.innerHTML += `<div class="num-75" id="t75-${i}">${i}</div>`;
-      }
-    }
 
-    function actualizarJuego()  {
-      const ultima = bolasCantadas.length > 0 ? bolasCantadas[bolasCantadas.length-1] : '--';
-      document.getElementById('bola-actual-num').innerText = ultima;
+  onValue(ref(db, 'partida/figura'), (snapshot) => {
+    const fig = snapshot.val() || "Cuatro Esquinas";
+    const elLbl = document.getElementById('lbl-figura');
+    if (elLbl) elLbl.innerText = fig;
+  });
 
-      const containerU = document.getElementById('container-ultimas');
+  onValue(ref(db, 'cartonesOcupados'), (snapshot) => {
+    cartonesOcupados = snapshot.val() || {};
+    renderMercado();
+    renderAdminCartones();
+  });
+
+  function actualizarJuego() {
+    const ultima = bolasCantadas.length > 0 ? bolasCantadas[bolasCantadas.length - 1] : '--';
+    const elBola = document.getElementById('bola-actual-num');
+    if (elBola) elBola.innerText = ultima;
+
+    const containerU = document.getElementById('container-ultimas');
+    if (containerU) {
       containerU.innerHTML = '';
       bolasCantadas.slice(-5).reverse().forEach(b => {
         containerU.innerHTML += `<div class="bola-mini">${b}</div>`;
       });
-// Actualizar visor del administrador
-      const elAdmBola = document.getElementById('adm-bola-actual');
-      if (elAdmBola) elAdmBola.innerText = ultima;
+    }
 
-      const containerAdmU = document.getElementById('adm-container-ultimas');
-      if (containerAdmU) {
-        containerAdmU.innerHTML = '';
-        bolasCantadas.slice(-5).reverse().forEach(b => {
-          containerAdmU.innerHTML += `<div class="bola-mini">${b}</div>`;
-        });
-      }
-      for(let i=1; i<=75; i++) {
-        const el = document.getElementById(`t75-${i}`);
-        if(el) {
-          if(bolasCantadas.includes(i)) el.classList.add('cantado');
-          else el.classList.remove('cantado');
-        }
-        verificarGanadores();
-      }
+    const elAdmBola = document.getElementById('adm-bola-actual');
+    if (elAdmBola) elAdmBola.innerText = ultima;
 
-      const containerMC = document.getElementById('container-mis-cartones');
-      containerMC.innerHTML = '';
-      misCartones.forEach(numC => {
-        const nums = generarNumerosCarton(numC);
-        let faltantes = [];
-        let html = `<div class="carton-box"><div style="color:#ffcc00; font-weight:bold; text-align:center; margin-bottom:5px;">Cartón #${numC}</div><div class="grid-5x5">`;
-        
-        nums.forEach(n => {
-          const marcada = bolasCantadas.includes(n) || n === '★' ? 'marcada' : '';
-          if(!bolasCantadas.includes(n) && n !== '★') faltantes.push(`#${n}`);
-          html += `<div class="cell ${marcada}">${n}</div>`;
-        });
-        
-        html += `</div><div class="faltantes-txt">Le falta(n): ${faltantes.slice(0,4).join(', ')}...</div></div>`;
-        containerMC.innerHTML += html;
+    const containerAdmU = document.getElementById('adm-container-ultimas');
+    if (containerAdmU) {
+      containerAdmU.innerHTML = '';
+      bolasCantadas.slice(-5).reverse().forEach(b => {
+        containerAdmU.innerHTML += `<div class="bola-mini">${b}</div>`;
       });
     }
 
-    function generarNumerosCarton(id) {
-  let columnas = [[], [], [], [], []];
-  let rangos = [
-    { min: 1, max: 15 },   // B
-    { min: 16, max: 30 },  // I
-    { min: 31, max: 45 },  // N
-    { min: 46, max: 60 },  // G
-    { min: 61, max: 75 }   // O
-  ];
-
-  for (let c = 0; c < 5; c++) {
-    let semilla = id * 11 + c * 7;
-    let disponibles = [];
-    for (let n = rangos[c].min; n <= rangos[c].max; n++) disponibles.push(n);
-    
-    for (let f = 0; f < 5; f++) {
-      let idx = (semilla + f * 3) % disponibles.length;
-      columnas[c].push(disponibles.splice(idx, 1)[0]);
+    for(let i=1; i<=75; i++) {
+      const el = document.getElementById(`t75-${i}`);
+      if(el) {
+        if(bolasCantadas.includes(i)) el.classList.add('cantado');
+        else el.classList.remove('cantado');
+      }
     }
+
+    verificarGanadores();
   }
 
-  let arr = [];
-  for (let fila = 0; fila < 5; fila++) {
-    for (let col = 0; col < 5; col++) {
-      if (fila === 2 && col === 2) {
-        arr.push('★');
-      } else {
-        arr.push(columnas[col][fila]);
+  function verificarGanadores() {
+    if (bolasCantadas.length === 0 || ganadorNotificado) return;
+
+    const elFig = document.getElementById('lbl-figura');
+    const figuraActiva = elFig ? elFig.innerText : "Cuatro Esquinas";
+
+    Object.keys(cartonesOcupados).forEach(numC => {
+      const nums = generarNumerosCarton(parseInt(numC));
+      const nombreJugador = cartonesOcupados[numC];
+      let gano = false;
+
+      if (figuraActiva.includes("Cuatro Esquinas")) {
+        const esquinas = [0, 4, 20, 24];
+        gano = esquinas.every(idx => bolasCantadas.includes(nums[idx]) || nums[idx] === '★');
+      } else if (figuraActiva.includes("Cartón Lleno")) {
+        gano = nums.every(n => bolasCantadas.includes(n) || n === '★');
+      } else if (figuraActiva.includes("Línea Horizontal")) {
+        for (let f = 0; f < 5; f++) {
+          let filaCompleta = true;
+          for (let c = 0; c < 5; c++) {
+            let val = nums[f * 5 + c];
+            if (!bolasCantadas.includes(val) && val !== '★') filaCompleta = false;
+          }
+          if (filaCompleta) { gano = true; break; }
+        }
       }
-    }
+
+      if (gano) {
+        ganadorNotificado = true;
+        alert(`🎉 ¡BINGO! El Cartón #${numC} de ${nombreJugador} ha GANADO con ${figuraActiva}!`);
+      }
+    });
   }
-  return arr;
-}
 
-    window.loginAdmin = function() {
-      if(prompt("Ingresa la Clave de Administradora:") === "1234") {
-        document.getElementById('view-registro').classList.add('hidden');
-        document.getElementById('view-admin').classList.remove('hidden');
-      } else {
-        alert("Clave incorrecta");
-      }
-    };
-
-    function obtenerBolaAleatoriaUnica() {
-      if (bolasCantadas.length >= 75) return null;
-      let num;
-      do {
-        num = Math.floor(Math.random() * 75) + 1;
-      } while (bolasCantadas.includes(num));
-      return num;
-    }
-
-    window.cantarBolaAleatoria = function() {
-      const num = obtenerBolaAleatoriaUnica();
-      if (num) {
-        set(ref(db, `partida/bolas/${Date.now()}`), num);
-      } else {
-        alert("¡Ya salieron las 75 bolas!");
-      }
-    };
-
-    window.iniciarCantadorAuto = function() {
-      const seg = parseInt(document.getElementById('adm-timer-sec').value) || 5;
+  window.admReiniciar = function() {
+    if(confirm("¿Segura que deseas reiniciar la partida?")) {
       if (intervaloAuto) clearInterval(intervaloAuto);
-      
-      cantarBolaAleatoria();
-      intervaloAuto = setInterval(() => {
-        const num = obtenerBolaAleatoriaUnica();
-        if (num) {
-          set(ref(db, `partida/bolas/${Date.now()}`), num);
-        } else {
-          clearInterval(intervaloAuto);
-          alert("¡Juego completado, salieron todas las bolas!");
-        }
-      }, seg * 1000);
-    };
-
-    window.detenerCantadorAuto = function() {
-      if (intervaloAuto) {
-        clearInterval(intervaloAuto);
-        alert("Automático detenido.");
-      }
-    };
-
-    window.admCantar = function() {
-      const input = document.getElementById('adm-num');
-      const v = parseInt(input.value);
-      if(v >= 1 && v <= 75) {
-        set(ref(db, `partida/bolas/${Date.now()}`), v);
-        input.value = '';
-      } else {
-        alert("Ingresa un número entre 1 y 75");
-      }
-    };
-
-    window.cambiarFigura = function(fig) {
-      set(ref(db, 'partida/figura'), fig);
-    };
-
-    function renderAdminCartones() {
-      const container = document.getElementById('adm-lista-cartones');
-      const keys = Object.keys(cartonesOcupados);
-      if(keys.length === 0) {
-        container.innerText = "Sin cartones registrados aún.";
-        return;
-      }
-      container.innerHTML = keys.map(k => `<div><strong>Cartón #${k}:</strong> ${cartonesOcupados[k]}</div>`).join('');
+      set(ref(db, 'partida/bolas'), null);
+      set(ref(db, 'cartonesOcupados'), null);
+      ganadorNotificado = false;
     }
-
-    window.admReiniciar = function() {
-      if(confirm("¿Segura que deseas reiniciar toda la partida y liberar los cartones?")) {
-        if (intervaloAuto) clearInterval(intervaloAuto);
-        set(ref(db, 'partida/bolas'), null);
-        set(ref(db, 'cartonesOcupados'), null);
-        ganadorNotificado = false;
-      }
-    };
-    let ganadorNotificado = false;
-
-function verificarGanadores() {
-  if (bolasCantadas.length === 0 || ganadorNotificado) return;
-
-  const elFig = document.getElementById('lbl-figura');
-  const figuraActiva = elFig ? elFig.innerText : "Cuatro Esquinas";
-
-  Object.keys(cartonesOcupados).forEach(numC => {
-    const nums = generarNumerosCarton(parseInt(numC));
-    const nombreJugador = cartonesOcupados[numC];
-    let gano = false;
-
-    if (figuraActiva.includes("Cuatro Esquinas")) {
-      const esquinas = [0, 4, 20, 24];
-      gano = esquinas.every(idx => bolasCantadas.includes(nums[idx]) || nums[idx] === '★');
-    } else if (figuraActiva.includes("Cartón Lleno")) {
-      gano = nums.every(n => bolasCantadas.includes(n) || n === '★');
-    } else if (figuraActiva.includes("Línea Horizontal")) {
-      for (let f = 0; f < 5; f++) {
-        let filaCompleta = true;
-        for (let c = 0; c < 5; c++) {
-          let val = nums[f * 5 + c];
-          if (!bolasCantadas.includes(val) && val !== '★') filaCompleta = false;
-        }
-        if (filaCompleta) { gano = true; break; }
-      }
-    }
-
-    if (gano) {
-      ganadorNotificado = true;
-      alert(`🎉 ¡BINGO! El Cartón #${numC} de ${nombreJugador} ha GANADO con ${figuraActiva}!`);
-    }
-  });
-}
-  </script>
+  };
+</script>
 </body>
 </html>
