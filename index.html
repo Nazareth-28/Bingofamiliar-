@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -38,11 +38,9 @@
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.2s;
     }
     .btn-primary { background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; }
     .btn-secondary { background-color: #334155; color: white; }
-    .btn:hover { opacity: 0.9; }
     input {
       width: 90%;
       padding: 12px;
@@ -54,11 +52,10 @@
       text-align: center;
       font-size: 16px;
     }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
     .board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; }
     .cell { background: white; color: black; font-weight: bold; padding: 10px; border-radius: 5px; }
     .header-cell { background: #0284c7; color: white; }
-    .free-cell { background: #22c55e; color: white; }
   </style>
 </head>
 <body>
@@ -84,14 +81,18 @@
   <div id="player-view" class="card hidden">
     <h2>¡Bienvenida al Bingo!</h2>
     <p>Selecciona tu número de cartón asignado:</p>
-    <select id="carton-select" onchange="cargarCarton(this.value)" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px;">
+    <select id="carton-select" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px;">
       <option value="1">Cartón #1</option>
       <option value="2">Cartón #2</option>
     </select>
     
-    <div class="board" id="carton-board">
+    <div class="board">
       <div class="cell header-cell">B</div><div class="cell header-cell">I</div><div class="cell header-cell">N</div><div class="cell header-cell">G</div><div class="cell header-cell">O</div>
-      <!-- Las celdas se cargan automáticamente -->
+      <div class="cell">2</div><div class="cell">18</div><div class="cell">34</div><div class="cell">50</div><div class="cell">66</div>
+      <div class="cell">5</div><div class="cell">21</div><div class="cell">37</div><div class="cell">53</div><div class="cell">69</div>
+      <div class="cell">8</div><div class="cell">24</div><div class="cell" style="background:#22c55e; color:white;">FREE</div><div class="cell">56</div><div class="cell">72</div>
+      <div class="cell">11</div><div class="cell">27</div><div class="cell">43</div><div class="cell">59</div><div class="cell">75</div>
+      <div class="cell">14</div><div class="cell">30</div><div class="cell">31</div><div class="cell">47</div><div class="cell">63</div>
     </div>
     <br>
     <button class="btn btn-secondary" onclick="volverMenu()">← Volver al Menú</button>
@@ -124,7 +125,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Escuchar bolas cantadas
     onValue(ref(db, 'partida/ultimaBola'), (snapshot) => {
       const numero = snapshot.val();
       if (numero) {
@@ -167,7 +167,7 @@
 
     function loginAdmin() {
       const pass = document.getElementById('admin-pass').value;
-      if (pass === "1234") { // Puedes cambiar esta contraseña si gustas
+      if (pass === "1234") {
         ocultarVistas();
         document.getElementById('admin-panel-view').classList.remove('hidden');
       } else {
@@ -176,4 +176,4 @@
     }
   </script>
 </body>
-</html>   
+</html>
