@@ -253,6 +253,11 @@
           <option value="Cuatro Esquinas">Cuatro Esquinas</option>
           <option value="Línea Horizontal">Línea Horizontal</option>
           <option value="Línea Vertical">Línea Vertical</option>
+          <option value="Letra X">Letra X</option>
+          <option value="Letra N">Letra N</option>
+          <option value="Letra C">Letra C</option>
+          <option value="Cruz (+)">Cruz (+)</option>
+          <option value="Cuadro Exterior">Cuadro Exterior</option>
         </select>
       </div>
 
@@ -306,7 +311,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // NUEVO GENERADOR ALEATORIO DE ALTA VARIABILIDAD
   function pseudoRandom(seed) {
     let x = Math.sin(seed++) * 10000;
     return x - Math.floor(x);
@@ -317,7 +321,6 @@
       let nums = [];
       for(let i = min; i <= max; i++) nums.push(i);
       
-      // Mezcla verdaderamente aleatoria por cada columna usando semilla esparcida
       for (let i = nums.length - 1; i > 0; i--) {
         const j = Math.floor(pseudoRandom(seedCol + i * 17 + cartonId * 997) * (i + 1));
         [nums[i], nums[j]] = [nums[j], nums[i]];
@@ -340,8 +343,9 @@
     return carton;
   }
 
+  // AHORA GENERA 200 CARTONES ÚNICOS
   const BANCO_CARTONES = {};
-  for(let id = 1; id <= 100; id++) {
+  for(let id = 1; id <= 200; id++) {
     BANCO_CARTONES[id] = generarCartonTotalmenteUnico(id);
   }
 
@@ -357,7 +361,6 @@
   let figuraActual = "Cartón Lleno (Apagón)";
   let autoCantoInterval = null;
 
-  // Registrar presencia online
   const presencaref = ref(db, `presencia/${miSessionKey}`);
   set(presencaref, true);
   onDisconnect(presencaref).remove();
@@ -567,7 +570,8 @@
     if(!grid) return;
     grid.innerHTML = "";
 
-    for(let id=1; id<=100; id++) {
+    // MUESTRA 200 EN EL MERCADO
+    for(let id=1; id<=200; id++) {
       const ocupado = cartonesOcupados[id];
       let stateClass = "";
       if(ocupado) {
@@ -601,14 +605,23 @@
     });
   }
 
+  // REGLAS Y CÁLCULO DE FIGURAS MULTI-MODALIDAD
+  function obtenerIndicesFigura() {
+    if (figuraActual === "Cuatro Esquinas") return [0, 4, 20, 24];
+    if (figuraActual === "Letra X") return [0, 4, 6, 8, 12, 16, 18, 20, 24];
+    if (figuraActual === "Letra N") return [0, 5, 10, 15, 20, 6, 12, 18, 4, 9, 14, 19, 24];
+    if (figuraActual === "Letra C") return [0, 1, 2, 3, 4, 0, 5, 10, 15, 20, 20, 21, 22, 23, 24];
+    if (figuraActual === "Cruz (+)") return [2, 7, 12, 17, 22, 10, 11, 13, 14];
+    if (figuraActual === "Cuadro Exterior") return [0,1,2,3,4, 5,9, 10,14, 15,19, 20,21,22,23,24];
+    return null; // Líneas y Cartón Lleno se calculan diferente
+  }
+
   function calcularFaltantesFigura(carton) {
     const isMarked = (val) => val === "★" || bolasCantadas.includes(val);
     let faltantes = [];
 
     if(figuraActual === "Cartón Lleno (Apagón)") {
       carton.forEach(v => { if(!isMarked(v)) faltantes.push(v); });
-    } else if(figuraActual === "Cuatro Esquinas") {
-      [0, 4, 20, 24].forEach(idx => { if(!isMarked(carton[idx])) faltantes.push(carton[idx]); });
     } else if(figuraActual === "Línea Horizontal") {
       let minFaltantes = 5;
       for(let r=0; r<5; r++) {
@@ -628,6 +641,15 @@
           if(!isMarked(v)) temp.push(v);
         }
         if(temp.length < minFaltantes) { minFaltantes = temp.length; faltantes = temp; }
+      }
+    } else {
+      const indices = obtenerIndicesFigura();
+      if(indices) {
+        // Filtrar duplicados por si acaso
+        const unicos = [...new Set(indices)];
+        unicos.forEach(idx => {
+          if(!isMarked(carton[idx])) faltantes.push(carton[idx]);
+        });
       }
     }
     return faltantes;
@@ -725,8 +747,6 @@
 
       if(figuraActual === "Cartón Lleno (Apagón)") {
         gano = carton.every(isMarked);
-      } else if(figuraActual === "Cuatro Esquinas") {
-        gano = [0, 4, 20, 24].every(idx => isMarked(carton[idx]));
       } else if(figuraActual === "Línea Horizontal") {
         for(let r=0; r<5; r++) {
           let fila = [carton[r*5], carton[r*5+1], carton[r*5+2], carton[r*5+3], carton[r*5+4]];
@@ -737,12 +757,17 @@
           let col = [carton[c], carton[c+5], carton[c+10], carton[c+15], carton[c+20]];
           if(col.every(isMarked)) { gano = true; break; }
         }
+      } else {
+        const indices = obtenerIndicesFigura();
+        if(indices) {
+          gano = indices.every(idx => isMarked(carton[idx]));
+        }
       }
 
       if(gano) {
         if(autoCantoInterval) window.toggleCantoAutomatico();
         
-        document.getElementById('modalGanadorTexto').innerText = `¡El Cartón #${id} de ${info.nombre} ha cantado BINGO!`;
+        document.getElementById('modalGanadorTexto').innerText = `¡El Cartón #${id} de ${info.nombre} ha cantado BINGO con ${figuraActual}!`;
         
         if (esAdmin) {
           document.getElementById('modalCartonGanadorDisplay').innerHTML = generarHTMLCarton(id, carton, false);
