@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -20,327 +20,160 @@
     }
     .card {
       background-color: #1e293b;
-      border-radius: 20px;
-      padding: 20px;
-      width: 100%;
-      max-width: 420px;
-      text-align: center;
+      padding: 25px;
+      border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      box-sizing: border-box;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
     }
-    h1 { color: #f472b6; font-size: 1.8rem; margin-bottom: 5px; }
-    h2 { color: #38bdf8; font-size: 1.4rem; margin-bottom: 10px; }
-    .subtitle { color: #94a3b8; font-size: 0.85rem; margin-bottom: 20px; }
-    
+    h1 { color: #ec4899; margin-bottom: 5px; }
+    p { color: #94a3b8; font-size: 14px; margin-top: 0; }
     .btn {
       width: 100%;
       padding: 14px;
-      margin: 8px 0;
+      margin: 10px 0;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
+      font-size: 16px;
       font-weight: bold;
-      font-size: 1rem;
       cursor: pointer;
       transition: 0.2s;
     }
-    .btn-jugador { background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; }
-    .btn-admin { background-color: #334155; color: #94a3b8; }
-    .btn-cantar { background-color: #22c55e; color: white; font-size: 1.2rem; }
-    .hidden { display: none; }
-    
-    select {
-      width: 100%;
+    .btn-primary { background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; }
+    .btn-secondary { background-color: #334155; color: white; }
+    .btn:hover { opacity: 0.9; }
+    input {
+      width: 90%;
       padding: 12px;
+      margin: 10px 0;
       border-radius: 8px;
+      border: 1px solid #475569;
       background-color: #0f172a;
       color: white;
-      border: 1px solid #334155;
-      font-size: 1rem;
-      margin-bottom: 15px;
+      text-align: center;
+      font-size: 16px;
     }
-
-    /* Tabla del Cartón */
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 10px; overflow: hidden; }
-    th { background-color: #0284c7; color: white; padding: 10px; font-size: 1.1rem; }
-    td { background-color: #ffffff; color: #0f172a; padding: 12px 5px; font-weight: bold; border: 1px solid #cbd5e1; font-size: 1.1rem; text-align: center; }
-    td.marcado { background-color: #22c55e !important; color: white !important; }
-    td.gratis { background-color: #eab308; color: #0f172a; font-size: 0.8rem; }
-
-    /* Tómbola Admin */
-    .bola-gigante {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #f472b6, #e11d48);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      font-weight: bold;
-      margin: 15px auto;
-      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
-    }
-    .historial {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      justify-content: center;
-      max-height: 100px;
-      overflow-y: auto;
-      margin-top: 10px;
-      padding: 5px;
-      background: #0f172a;
-      border-radius: 8px;
-    }
-    .mini-bola {
-      background: #38bdf8;
-      color: #0f172a;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: bold;
-    }
-    .alerta-ganador {
-      background-color: #22c55e;
-      color: white;
-      padding: 10px;
-      border-radius: 8px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      animation: pulse 1s infinite alternate;
-    }
+    .hidden { display: none; }
+    .board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; }
+    .cell { background: white; color: black; font-weight: bold; padding: 10px; border-radius: 5px; }
+    .header-cell { background: #0284c7; color: white; }
+    .free-cell { background: #22c55e; color: white; }
   </style>
 </head>
 <body>
 
-  <!-- PANTALLA 1: MENÚ INICIAL -->
-  <div id="pantalla-inicio" class="card">
+  <!-- PANTALLA PRINCIPAL -->
+  <div id="menu-view" class="card">
     <h1>Bingo Lineal</h1>
-    <p class="subtitle">El sistema oficial en tiempo real con voz cantante</p>
-    
-    <button class="btn btn-jugador" onclick="irA('pantalla-jugador')">🎮 Entrar como Jugadora</button>
-    <button class="btn btn-admin" onclick="irA('pantalla-admin')">🔑 Acceso Administradora</button>
+    <p>El sistema oficial en tiempo real con voz cantante</p>
+    <button class="btn btn-primary" onclick="verJugadora()">🎮 Entrar como Jugadora</button>
+    <button class="btn btn-secondary" onclick="mostrarLoginAdmin()">🔑 Acceso Administradora</button>
   </div>
 
-  <!-- PANTALLA 2: VISTA JUGADORA -->
-  <div id="pantalla-jugador" class="card hidden">
+  <!-- LOGIN ADMINISTRADOR -->
+  <div id="admin-login-view" class="card hidden">
+    <h2>Acceso Administradora</h2>
+    <p>Ingresa la clave para acceder al panel de control:</p>
+    <input type="password" id="admin-pass" placeholder="Contraseña">
+    <button class="btn btn-primary" onclick="loginAdmin()">Ingresar</button>
+    <button class="btn btn-secondary" onclick="volverMenu()">← Volver al Menú</button>
+  </div>
+
+  <!-- VISTA JUGADORA -->
+  <div id="player-view" class="card hidden">
     <h2>¡Bienvenida al Bingo!</h2>
-    <p class="subtitle">Selecciona tu número de cartón asignado:</p>
-    
-    <select id="select-carton" onchange="cargarCarton(this.value)">
-      <!-- Opciones del 1 al 30 -->
+    <p>Selecciona tu número de cartón asignado:</p>
+    <select id="carton-select" onchange="cargarCarton(this.value)" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px;">
+      <option value="1">Cartón #1</option>
+      <option value="2">Cartón #2</option>
     </select>
-
-    <div id="mensaje-ganador-jugador"></div>
-    <div id="contenedor-carton"></div>
     
-    <button class="btn btn-admin" onclick="irA('pantalla-inicio')" style="margin-top: 20px;">← Volver al Menú</button>
+    <div class="board" id="carton-board">
+      <div class="cell header-cell">B</div><div class="cell header-cell">I</div><div class="cell header-cell">N</div><div class="cell header-cell">G</div><div class="cell header-cell">O</div>
+      <!-- Las celdas se cargan automáticamente -->
+    </div>
+    <br>
+    <button class="btn btn-secondary" onclick="volverMenu()">← Volver al Menú</button>
   </div>
 
-  <!-- PANTALLA 3: VISTA ADMINISTRADORA -->
-  <div id="pantalla-admin" class="card hidden">
-    <h2>Panel Administradora</h2>
-    <p class="subtitle">Tómbola de Cantado en Vivo</p>
-    
-    <div id="bola-actual" class="bola-gigante">--</div>
-
-    <button class="btn btn-cantar" onclick="sacarBola()">🎲 Sacar / Cantar Bola</button>
-    <button class="btn btn-admin" onclick="reiniciarJuego()" style="background-color:#ef4444; color:white;">🔄 Reiniciar Partida</button>
-    
-    <p style="margin-top:15px; font-size:0.9rem; color:#94a3b8;">Bolas Cantadas:</p>
-    <div id="historial-bolas" class="historial"></div>
-
-    <button class="btn btn-admin" onclick="irA('pantalla-inicio')" style="margin-top: 20px;">← Volver al Menú</button>
+  <!-- VISTA ADMINISTRADORA -->
+  <div id="admin-panel-view" class="card hidden">
+    <h2>Panel de Administradora</h2>
+    <p>Cantar número en tiempo real:</p>
+    <input type="number" id="numero-cantar" placeholder="Ej. 15" min="1" max="75">
+    <button class="btn btn-primary" onclick="enviarNumero()">📢 Cantar Número</button>
+    <button class="btn btn-secondary" onclick="volverMenu()">← Volver al Menú</button>
   </div>
+
+  <!-- LÓGICA JAVASCRIPT & FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7odiafJgukMu3S3WygWjtnQPbG9AT48U",
+      authDomain: "bingofamiliar-f99e0.firebaseapp.com",
+      databaseURL: "https://bingofamiliar-f99e0-default-rtdb.firebaseio.com",
+      projectId: "bingofamiliar-f99e0",
+      storageBucket: "bingofamiliar-f99e0.firebasestorage.app",
+      messagingSenderId: "1015749396232",
+      appId: "1:1015749396232:web:92e5f8b207eefdc7a98ebd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Escuchar bolas cantadas
+    onValue(ref(db, 'partida/ultimaBola'), (snapshot) => {
+      const numero = snapshot.val();
+      if (numero) {
+        alert("¡Nueva bola cantada!: " + numero);
+      }
+    });
+
+    window.enviarNumero = function() {
+      const numInput = document.getElementById('numero-cantar');
+      if (numInput.value) {
+        set(ref(db, 'partida/ultimaBola'), numInput.value);
+        alert("Número cantado: " + numInput.value);
+        numInput.value = '';
+      }
+    };
+  </script>
 
   <script>
-    let numerosSacados = [];
-    let cartonActualMatriz = [];
-
-    // Generación matemática de los 30 cartones únicos
-    function generarSemillaCarton(numero) {
-      const columnas = [
-        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-        [16,17,18,19,20,21,22,23,24,25,26,27,28,29,30],
-        [31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],
-        [46,47,48,49,50,51,52,53,54,55,56,57,58,59,60],
-        [61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]
-      ];
-      
-      let carton = [];
-      for (let i = 0; i < 5; i++) {
-        let fila = [];
-        for (let j = 0; j < 5; j++) {
-          if (i === 2 && j === 2) {
-            fila.push("GRATIS");
-          } else {
-            let idx = (numero * (j + 1) + (i * 3)) % columnas[j].length;
-            fila.push(columnas[j][idx]);
-          }
-        }
-        carton.push(fila);
-      }
-      return carton;
+    function ocultarVistas() {
+      document.getElementById('menu-view').classList.add('hidden');
+      document.getElementById('admin-login-view').classList.add('hidden');
+      document.getElementById('player-view').classList.add('hidden');
+      document.getElementById('admin-panel-view').classList.add('hidden');
     }
 
-    // Cargar opciones del 1 al 30 en el menú desplegable
-    const select = document.getElementById('select-carton');
-    for (let i = 1; i <= 30; i++) {
-      let opt = document.createElement('option');
-      opt.value = i;
-      opt.innerText = `Cartón #${i}`;
-      select.appendChild(opt);
+    function volverMenu() {
+      ocultarVistas();
+      document.getElementById('menu-view').classList.remove('hidden');
     }
 
-    function cargarCarton(num) {
-      cartonActualMatriz = generarSemillaCarton(parseInt(num));
-      document.getElementById('mensaje-ganador-jugador').innerHTML = '';
-      
-      let html = '<table id="tabla-carton"><thead><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr></thead><tbody>';
-      
-      cartonActualMatriz.forEach((fila, i) => {
-        html += '<tr>';
-        fila.forEach((celda, j) => {
-          let esGratis = celda === "GRATIS";
-          let clase = esGratis ? "gratis marcado" : "";
-          let valor = esGratis ? "GRATIS" : celda;
-          html += `<td id="celda-${i}-${j}" class="${clase}" data-valor="${celda}">${valor}</td>`;
-        });
-        html += '</tr>';
-      });
-      
-      html += '</tbody></table>';
-      document.getElementById('contenedor-carton').innerHTML = html;
-      marcarNumerosAuto();
+    function verJugadora() {
+      ocultarVistas();
+      document.getElementById('player-view').classList.remove('hidden');
     }
 
-    // Navegación
-    function irA(pantallaId) {
-      document.getElementById('pantalla-inicio').classList.add('hidden');
-      document.getElementById('pantalla-jugador').classList.add('hidden');
-      document.getElementById('pantalla-admin').classList.add('hidden');
-      document.getElementById(pantallaId).classList.remove('hidden');
-      if (pantallaId === 'pantalla-jugador') {
-        marcarNumerosAuto();
+    function mostrarLoginAdmin() {
+      ocultarVistas();
+      document.getElementById('admin-login-view').classList.remove('hidden');
+    }
+
+    function loginAdmin() {
+      const pass = document.getElementById('admin-pass').value;
+      if (pass === "1234") { // Puedes cambiar esta contraseña si gustas
+        ocultarVistas();
+        document.getElementById('admin-panel-view').classList.remove('hidden');
+      } else {
+        alert("Contraseña incorrecta");
       }
     }
-
-    // Tómbola parlante
-    function sacarBola() {
-      if (numerosSacados.length >= 75) {
-        hablar("Ya salieron todas las bolitas");
-        return;
-      }
-
-      let num;
-      do {
-        num = Math.floor(Math.random() * 75) + 1;
-      } while (numerosSacados.includes(num));
-
-      numerosSacados.push(num);
-
-      let letra = '';
-      if (num <= 15) letra = 'B';
-      else if (num <= 30) letra = 'I';
-      else if (num <= 45) letra = 'N';
-      else if (num <= 60) letra = 'G';
-      else letra = 'O';
-
-      let bolaTexto = `${letra}-${num}`;
-      
-      document.getElementById('bola-actual').innerText = bolaTexto;
-
-      let mini = document.createElement('span');
-      mini.className = 'mini-bola';
-      mini.innerText = bolaTexto;
-      document.getElementById('historial-bolas').prepend(mini);
-
-      hablar(`${letra}, ${num}`);
-    }
-
-    function hablar(texto) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        let voz = new SpeechSynthesisUtterance(texto);
-        voz.lang = 'es-ES';
-        window.speechSynthesis.speak(voz);
-      }
-    }
-
-    // Marcado y verificación automática de victorias
-    function marcarNumerosAuto() {
-      let celdas = document.querySelectorAll('#tabla-carton td');
-      celdas.forEach(celda => {
-        let val = parseInt(celda.getAttribute('data-valor'));
-        if (numerosSacados.includes(val)) {
-          celda.classList.add('marcado');
-        }
-      });
-      verificarGanador();
-    }
-
-    function verificarGanador() {
-      let filas = document.querySelectorAll('#tabla-carton tr');
-      let esGanador = false;
-
-      // Evaluar filas completas
-      filas.forEach((fila, idx) => {
-        if (idx === 0) return; // Omitir encabezado
-        let celdas = fila.querySelectorAll('td');
-        if (celdas.length > 0) {
-          let completada = Array.from(celdas).every(c => c.classList.contains('marcado'));
-          if (completada) esGanador = true;
-        }
-      });
-
-      if (esGanador && document.getElementById('mensaje-ganador-jugador').innerText === '') {
-        document.getElementById('mensaje-ganador-jugador').innerHTML = '<div class="alerta-ganador">🎉 ¡BINGO! ¡CARTÓN GANADOR! 🎉</div>';
-        hablar("¡Atención! ¡Tenemos un cartón ganador!");
-      }
-    }
-
-    function reiniciarJuego() {
-      numerosSacados = [];
-      document.getElementById('bola-actual').innerText = '--';
-      document.getElementById('historial-bolas').innerHTML = '';
-      hablar("Partida reiniciada");
-    }
-
-    // Cargar cartón 1 por defecto al abrir
-    cargarCarton(1);
   </script>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyA7odiafJgukMu3S3WygWjtnQPbG9AT48U",
-    authDomain: "bingofamiliar-f99e0.firebaseapp.com",
-    databaseURL: "https://bingofamiliar-f99e0-default-rtdb.firebaseio.com",
-    projectId: "bingofamiliar-f99e0",
-    storageBucket: "bingofamiliar-f99e0.firebasestorage.app",
-    messagingSenderId: "1015749396232",
-    appId: "1:1015749396232:web:92e5f8b207eefdc7a98ebd",
-    measurementId: "G-ETQ8B9M4YE"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // Escuchar cuando se cante una nueva bola en vivo
-  const bolaRef = ref(db, 'partida/ultimaBola');
-  onValue(bolaRef, (snapshot) => {
-    const numero = snapshot.val();
-    if (numero !== null) {
-      console.log("¡Nueva bola cantada en vivo!:", numero);
-    }
-  });
-
-  // Función para cantar bola desde el panel
-  window.cantarNumero = function(numero) {
-    set(ref(db, 'partida/ultimaBola'), numero);
-  };
-</script>
 </body>
-</html>
+</html>   
