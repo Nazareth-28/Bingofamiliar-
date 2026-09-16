@@ -386,6 +386,23 @@ const app = initializeApp(firebaseConfig);
       ganadorNotificado = false;
     }
   };
+window.entrarJuego = function() {
+  const nombre = document.getElementById('inputNombre').value;
+  if (!nombre) return alert("Por favor ingresa tu nombre");
+  miNombre = nombre;
+  document.getElementById('pantalla-inicio').style.display = 'none';
+  document.getElementById('pantalla-juego').style.display = 'block';
+};
+
+window.accesoAdmin = function() {
+  const clave = prompt("Ingresa la clave de Administradora:");
+  if (clave === "1234") {
+    document.getElementById('pantalla-inicio').style.display = 'none';
+    document.getElementById('pantalla-admin').style.display = 'block';
+  } else {
+    alert("Clave incorrecta");
+  }
+};    
 </script>
 </body>
 </html>
