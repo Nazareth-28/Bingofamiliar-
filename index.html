@@ -306,32 +306,43 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  function generarCarton(seed) {
-    const getCol = (min, max) => {
+  // NUEVO GENERADOR ALEATORIO DE ALTA VARIABILIDAD
+  function pseudoRandom(seed) {
+    let x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+  }
+
+  function generarCartonTotalmenteUnico(cartonId) {
+    const getCol = (min, max, seedCol) => {
       let nums = [];
-      for(let i=min; i<=max; i++) nums.push(i);
-      nums.sort(() => (Math.sin(seed++) * 10000) - Math.floor(Math.sin(seed++) * 10000));
+      for(let i = min; i <= max; i++) nums.push(i);
+      
+      // Mezcla verdaderamente aleatoria por cada columna usando semilla esparcida
+      for (let i = nums.length - 1; i > 0; i--) {
+        const j = Math.floor(pseudoRandom(seedCol + i * 17 + cartonId * 997) * (i + 1));
+        [nums[i], nums[j]] = [nums[j], nums[i]];
+      }
       return nums.slice(0, 5);
     };
 
-    let b = getCol(1, 15);
-    let i = getCol(16, 30);
-    let n = getCol(31, 45);
-    let g = getCol(46, 60);
-    let o = getCol(61, 75);
+    let b = getCol(1, 15, cartonId * 101);
+    let i = getCol(16, 30, cartonId * 203);
+    let n = getCol(31, 45, cartonId * 307);
+    let g = getCol(46, 60, cartonId * 409);
+    let o = getCol(61, 75, cartonId * 503);
 
     n[2] = "★";
 
     let carton = [];
-    for(let r=0; r<5; r++) {
+    for(let r = 0; r < 5; r++) {
       carton.push(b[r], i[r], n[r], g[r], o[r]);
     }
     return carton;
   }
 
   const BANCO_CARTONES = {};
-  for(let id=1; id<=100; id++) {
-    BANCO_CARTONES[id] = generarCarton(id * 777);
+  for(let id = 1; id <= 100; id++) {
+    BANCO_CARTONES[id] = generarCartonTotalmenteUnico(id);
   }
 
   let esAdmin = false;
