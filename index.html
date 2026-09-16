@@ -263,17 +263,20 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA7odiafJgukMu3S3WygWj...", // Tu configuración actual de Firebase
-    authDomain: "bingofamiliar-f99e0.firebaseapp.com",
-    databaseURL: "https://bingofamiliar-f99e0-default-rtdb.firebaseio.com",
-    projectId: "bingofamiliar-f99e0",
-    storageBucket: "bingofamiliar-f99e0.appspot.com",
-    messagingSenderId: "1015749396232",
-    appId: "1:1015749396232:web:92e5f8b20..."
-  };
+  
+const firebaseConfig = {
+  apiKey: "AIzaSyA7odiafJgukMu3S3WygWjtnQPbG9AT48U",
+  authDomain: "bingofamiliar-f99e0.firebaseapp.com",
+  databaseURL: "https://bingofamiliar-f99e0-default-rtdb.firebaseio.com",
+  projectId: "bingofamiliar-f99e0",
+  storageBucket: "bingofamiliar-f99e0.firebasestorage.app",
+  messagingSenderId: "1015749396232",
+  appId:  "1:1015749396232:web:92e5f8b207eefdc7a98ebd",
+  measurementId: "G-ETQ8B9M4YE"
+};
 
-  const app = initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
   let bolasCantadas = [];
