@@ -219,6 +219,13 @@
     <!-- PANEL ADMIN MEJORADO CON AUTOMÁTICO -->
     <div id="view-admin" class="card hidden">
       <h2 style="color:#ffcc00; margin-top:0;">Panel Administradora</h2>
+<!-- VISOR DE BOLA CANTADA PARA LA ADMINISTRADORA -->
+<div class="card" style="margin: 10px 0; background:#111827; text-align:center;">
+  <div style="color:#ffcc00; font-size:12px; font-weight:bold;">🔥 ÚLTIMA BOLA CANTADA</div>
+  <div class="bola-grande" id="adm-bola-actual">--</div>
+  <div style="font-size:11px; color:#8d99ae; margin-bottom:5px;">Últimas cantadas:</div>
+  <div class="ultimas-bolas" id="adm-container-ultimas"></div>
+</div>
       
       <label style="font-size:12px; color:#8d99ae;">Figura del Juego Activa:</label>
       <select id="adm-figura-select" onchange="cambiarFigura(this.value)">
