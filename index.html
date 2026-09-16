@@ -3,406 +3,598 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bingo Lineal Vizzio</title>
+  <title>Bingo Lineal - Tiempo Real</title>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body {
-      background-color: #0b132b;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 15px;
+    :root {
+      --bg-main: #0b1120;
+      --bg-card: #151e32;
+      --bg-input: #1e293b;
+      --accent-pink: #ff2a85;
+      --accent-purple: #8b5cf6;
+      --accent-yellow: #f59e0b;
+      --accent-green: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
     }
-    .container { width: 100%; max-width: 450px; }
-    
-    .title-banner { text-align: center; margin-bottom: 20px; }
-    .title-banner h1 {
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; padding: 12px; }
+    .container { width: 100%; max-width: 480px; margin: 0 auto; }
+
+    /* Header Design */
+    .header-title { text-align: center; margin-bottom: 20px; }
+    .header-title h1 {
       font-size: 32px;
       font-weight: 900;
-      color: #ff3366;
-      text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
-      margin: 0;
+      background: linear-gradient(135deg, #ff2a85 0%, #ff73fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(255, 42, 133, 0.4);
+      margin-bottom: 4px;
     }
-    .title-banner p { color: #8d99ae; font-size: 13px; margin-top: 5px; }
+    .header-title p { font-size: 13px; color: var(--text-muted); font-weight: 500; }
 
-    .card {
-      background-color: #1c2541;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      border: 1px solid #2e3859;
-      margin-bottom: 15px;
-    }
+    /* Cards & Containers */
+    .card { background: var(--bg-card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
+    .card-title { font-size: 22px; font-weight: 800; color: var(--accent-yellow); text-align: center; margin-bottom: 16px; }
 
-    input, select {
+    /* Forms & Inputs */
+    .form-group { margin-bottom: 14px; }
+    .form-control {
       width: 100%;
-      padding: 14px;
-      margin: 8px 0;
+      background: var(--bg-input);
+      border: 1px solid #334155;
       border-radius: 12px;
-      border: 1px solid #3a4768;
-      background-color: #0b132b;
-      color: white;
-      text-align: center;
-      font-size: 16px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s;
     }
+    .form-control:focus { border-color: var(--accent-pink); box-shadow: 0 0 0 3px rgba(255, 42, 133, 0.2); }
 
+    /* Buttons */
     .btn {
       width: 100%;
       padding: 14px;
+      border-radius: 12px;
       border: none;
-      border-radius: 12px;
+      font-weight: 700;
       font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
-      margin-top: 8px;
-    }
-    .btn-primary { background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; }
-    .btn-success { background: #10b981; color: white; font-size: 16px; }
-    .btn-secondary { background: #3a4768; color: white; }
-    .btn-danger { background: #ef4444; color: white; }
-    .btn-warning { background: #f59e0b; color: black; font-weight: bold; }
-    .hidden { display: none !important; }
-
-    .header-jugador {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .saludo-nombre { font-size: 24px; font-weight: 900; color: #ffcc00; margin: 0; }
-    .badge-figura {
-      background: #7209b7;
-      border: 2px solid #f72585;
-      border-radius: 12px;
-      padding: 8px 12px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .bola-grande {
-      width: 90px;
-      height: 90px;
-      background: #eaaa00;
-      color: #000;
-      border-radius: 50%;
+      transition: transform 0.1s, opacity 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 40px;
-      font-weight: 900;
-      margin: 10px auto;
-      box-shadow: 0 0 20px #eaaa00;
-    }
-    .ultimas-bolas { display: flex; gap: 8px; justify-content: center; }
-    .bola-mini {
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      background: #4cc9f0;
-      color: #000;
-      font-weight: bold;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .cartones-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
-      max-height: 220px;
-      overflow-y: auto;
-      margin-top: 10px;
     }
-    .btn-carton {
-      background: #2b3a55;
-      color: #ffcc00;
-      border: 1px solid #3a4768;
-      border-radius: 8px;
-      padding: 10px 0;
-      font-weight: bold;
-    }
-    .btn-carton.seleccionado { background: #ff3366 !important; color: white !important; }
-    .btn-carton.ocupado { background: #111827 !important; color: #4b5563 !important; }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: linear-gradient(135deg, #d946ef, #8b5cf6); color: white; box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3); }
+    .btn-secondary { background: #334155; color: white; margin-top: 10px; }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-warning { background: #f59e0b; color: white; }
 
-    .carton-box {
-      background: #0f172a;
-      border-radius: 12px;
-      padding: 12px;
-      width: 100%;
-      margin: 10px auto;
-      border: 1px solid #3a4768;
-    }
-    .grid-5x5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-    .cell {
-      background: #1e293b;
-      color: white;
-      font-weight: bold;
-      padding: 10px 0;
-      text-align: center;
-      border-radius: 6px;
-      font-size: 15px;
-    }
-    .cell.marcada { background: #eaaa00 !important; color: black !important; font-weight: 900; }
-    .faltantes-txt { color: #ff3366; font-size: 13px; font-weight: bold; margin-top: 8px; text-align: center; }
+    /* Top Bar User Info */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .user-greeting { font-size: 24px; font-weight: 900; color: var(--accent-yellow); }
+    .control-id { font-size: 12px; color: var(--text-muted); }
+    .badge-figura { background: rgba(255, 42, 133, 0.15); border: 1px solid var(--accent-pink); color: #ff65a3; padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; text-align: center; }
 
-    .tablero-75 { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 10px; }
-    .num-75 { background: #111827; color: #4b5563; font-size: 11px; padding: 6px 0; text-align: center; border-radius: 4px; }
-    .num-75.cantado { background: #4cc9f0 !important; color: black !important; font-weight: bold; }
-    
-    .lista-jugadores-admin {
-      max-height: 140px;
-      overflow-y: auto;
-      text-align: left;
-      font-size: 13px;
-      background: #0b132b;
-      padding: 10px;
-      border-radius: 8px;
+    /* Ball Display Area */
+    .ball-container { background: var(--bg-card); border-radius: 20px; padding: 20px; text-align: center; border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 16px; }
+    .ball-title { font-size: 13px; font-weight: 800; color: var(--accent-yellow); letter-spacing: 0.5px; margin-bottom: 12px; }
+    .main-ball-flex { display: flex; align-items: center; justify-content: space-around; }
+    .main-ball {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fef08a, #f59e0b, #b45309);
+      color: #000; font-size: 36px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
     }
+    .recent-balls { display: flex; gap: 6px; }
+    .mini-ball {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: #8b5cf6; color: white; font-weight: 800; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Cartón Grid */
+    .carton-card { background: #0f172a; border-radius: 16px; padding: 12px; border: 1px solid #334155; margin-bottom: 16px; }
+    .carton-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; font-weight: 700; }
+    .carton-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; text-align: center; }
+    .bingo-header-cell { font-weight: 900; color: var(--accent-pink); padding: 4px; font-size: 14px; }
+    .carton-cell {
+      background: #1e293b; border-radius: 8px; padding: 10px 0; font-size: 14px; font-weight: 700; color: #cbd5e1;
+      display: flex; align-items: center; justify-content: center; min-height: 38px;
+    }
+    .carton-cell.marked { background: var(--accent-yellow); color: #000; font-weight: 900; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+    .carton-cell.free { background: #3b82f6; color: white; font-size: 16px; }
+
+    /* Market Grid */
+    .market-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+    .market-btn { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 10px 0; color: var(--accent-yellow); font-weight: 800; cursor: pointer; text-align: center; }
+    .market-btn.selected { background: var(--accent-pink); color: white; border-color: #ff65a3; }
+    .market-btn.taken { background: #0f172a; color: #475569; border-color: #1e293b; cursor: not-allowed; opacity: 0.5; }
+
+    /* Tablero General (1-75) */
+    .tablero-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
+    .tablero-cell { background: #1e293b; border-radius: 4px; font-size: 10px; font-weight: 700; padding: 6px 0; text-align: center; color: #64748b; }
+    .tablero-cell.active { background: var(--accent-green); color: white; font-weight: 900; }
+
+    /* Winner Modal */
+    .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
+    .modal-content { background: var(--bg-card); border-radius: 20px; padding: 24px; text-align: center; border: 2px solid var(--accent-pink); width: 100%; max-width: 400px; }
+    .modal-content h2 { font-size: 28px; color: var(--accent-yellow); margin-bottom: 12px; }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="title-banner">
-      <h1>Bingo Lineal</h1>
-      <p>El sistema oficial en tiempo real con voz cantante</p>
-    </div>
+<div class="container">
+  
+  <!-- HEADER GLOBAL -->
+  <div class="header-title">
+    <h1>Bingo Lineal</h1>
+    <p>El sistema oficial en tiempo real con voz cantante</p>
+  </div>
 
-    <!-- REGISTRO -->
-    <div id="view-registro" class="card">
-      <h2 style="color:#ffcc00; text-align:center; margin-top:0;">Registro de Jugadora</h2>
-      <input type="text" id="reg-nombre" placeholder="Tu Nombre o Apodo">
-      <input type="text" id="reg-control" placeholder="Número de Control">
-      <input type="password" id="reg-codigo" placeholder="🔑 Código de Acceso de Sala">
-      
-      <button class="btn btn-primary" onclick="iniciarSesion()">Entrar al Juego</button>
-      <button class="btn btn-secondary" onclick="loginAdmin()">🔑 Acceso Administradora</button>
+  <!-- PANTALLA 1: REGISTRO DE JUGADORA -->
+  <div id="pantalla-inicio" class="card">
+    <div class="card-title">Registro de Jugadora</div>
+    <div class="form-group">
+      <input type="text" id="inputNombre" class="form-control" placeholder="Tu Nombre o Apodo">
     </div>
+    <div class="form-group">
+      <input type="text" id="inputControl" class="form-control" placeholder="Número de Control (Ej: 26045131)">
+    </div>
+    <div class="form-group">
+      <input type="text" id="inputCodigo" class="form-control" placeholder="Código de Acceso de Sala">
+    </div>
+    <button class="btn btn-primary" onclick="entrarAlJuego()">Entrar al Juego</button>
+    <button class="btn btn-secondary" onclick="accesoAdmin()">🔑 Acceso Administradora</button>
+  </div>
 
-    <!-- SALA JUEGO -->
-    <div id="view-juego" class="card hidden">
-      <div class="header-jugador">
+  <!-- PANTALLA 2: VISTA DE JUGADORA -->
+  <div id="pantalla-juego" class="hidden">
+    <!-- Top Bar -->
+    <div class="card" style="padding: 14px;">
+      <div class="top-bar">
         <div>
-          <h2 class="saludo-nombre" id="lbl-nombre">¡Hola!</h2>
-          <span style="font-size:12px; color:#8d99ae;" id="lbl-control">Control ID: --</span>
+          <div class="user-greeting">¡Hola, <span id="userNombre">Jugadora</span>!</div>
+          <div class="control-id">Control ID: <span id="userControl">---</span></div>
         </div>
-        <div class="badge-figura">Figura: <br><span style="color:#ffcc00" id="lbl-figura">Cartón Lleno</span></div>
-        <button class="btn-secondary" style="padding:6px 12px; border-radius:8px;" onclick="location.reload()">Salir</button>
-      </div>
-
-      <div class="card" style="margin-top:15px; background:#111827;">
-        <div style="color:#ffcc00; font-size:13px; font-weight:bold; text-align:center;">🔥 BOLA ACTUAL EN JUEGO</div>
-        <div class="bola-grande" id="bola-actual-num">--</div>
-        <div style="font-size:12px; text-align:center; color:#8d99ae;">Últimas 5 salidas:</div>
-        <div class="ultimas-bolas" id="container-ultimas"></div>
-      </div>
-
-      <div id="sec-mercado" class="card">
-        <h3 style="color:#ff3366; margin:0;" id="txt-disponibles">Selecciona tus Cartones</h3>
-        <p style="font-size:11px; color:#8d99ae;">Toca los cartones que deseas y presiona cargar.</p>
-        <div class="cartones-grid" id="grid-cartones"></div>
-        <button class="btn btn-success" onclick="confirmarCartones()">💳 Cargar / Confirmar Mis Cartones</button>
-      </div>
-
-      <div id="sec-mis-cartones" class="hidden">
-        <h3 style="color:#ffcc00; margin-bottom:5px;">Tus Cartones en Juego</h3>
-        <div id="container-mis-cartones"></div>
-      </div>
-
-      <div class="card" style="margin-top:15px;">
-        <h3 style="color:#ff3366; margin:0; text-align:center;">Tablero General (1-75)</h3>
-        <div class="tablero-75" id="grid-tablero-75"></div>
+        <div class="badge-figura">
+          Figura: <br><strong id="figuraActualText">Cartón Lleno (Apagón)</strong>
+        </div>
       </div>
     </div>
 
-    <!-- PANEL ADMIN MEJORADO CON AUTOMÁTICO -->
-    <div id="view-admin" class="card hidden">
-      <h2 style="color:#ffcc00; margin-top:0;">Panel Administradora</h2>
-<!-- VISOR DE BOLA CANTADA PARA LA ADMINISTRADORA -->
-<div class="card" style="margin: 10px 0; background:#111827; text-align:center;">
-  <div style="color:#ffcc00; font-size:12px; font-weight:bold;">🔥 ÚLTIMA BOLA CANTADA</div>
-  <div class="bola-grande" id="adm-bola-actual">--</div>
-  <div style="font-size:11px; color:#8d99ae; margin-bottom:5px;">Últimas cantadas:</div>
-  <div class="ultimas-bolas" id="adm-container-ultimas"></div>
-</div>
-      
-      <label style="font-size:12px; color:#8d99ae;">Figura del Juego Activa:</label>
-      <select id="adm-figura-select" onchange="cambiarFigura(this.value)">
-        <option value="Cartón Lleno (Apagón)">Cartón Lleno (Apagón)</option>
-        <option value="Cuatro Esquinas">Cuatro Esquinas</option>
-        <option value="Línea Horizontal">Línea Horizontal</option>
-        <option value="Letra X">Letra X</option>
-      </select>
-
-      <button class="btn btn-warning" onclick="cantarBolaAleatoria()">🎲 Cantar Bola Automática (1 Clic)</button>
-
-      <div style="margin-top:12px; background:#0b132b; padding:12px; border-radius:12px; border:1px solid #3a4768;">
-        <label style="font-size:12px; color:#ffcc00; font-weight:bold;">Cantador Automático por Tiempo:</label>
-        <input type="number" id="adm-timer-sec" value="5" min="2" max="30" placeholder="Segundos por bola">
-        <button class="btn btn-success" onclick="iniciarCantadorAuto()">▶️ Iniciar Extracción Automática</button>
-        <button class="btn btn-danger" onclick="detenerCantadorAuto()" style="margin-top:5px;">⏸️ Detener Automático</button>
+    <!-- Bola Actual Area -->
+    <div class="ball-container">
+      <div class="ball-title">🔥 BOLA ACTUAL EN JUEGO</div>
+      <div class="main-ball-flex">
+        <div class="main-ball" id="bolaActualDisplay">--</div>
+        <div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Últimas salidas:</div>
+          <div class="recent-balls" id="ultimasBolasContainer">
+            <div class="mini-ball">--</div>
+            <div class="mini-ball">--</div>
+            <div class="mini-ball">--</div>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div style="margin-top:10px;">
-        <input type="number" id="adm-num" placeholder="O ingresar manual (1-75)" min="1" max="75">
-        <button class="btn btn-secondary" onclick="admCantar()">📢 Cantar Manual</button>
+    <!-- Mis Cartones -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+        <h3 style="font-size: 18px; color: var(--accent-yellow);">Tus Cartones en Juego</h3>
       </div>
-
-      <div style="margin-top:15px;">
-        <strong style="font-size:13px; color:#ffcc00;">Cartones Asignados a Jugadoras:</strong>
-        <div class="lista-jugadores-admin" id="adm-lista-cartones">Sin cartones registrados.</div>
+      <div id="misCartonesContainer">
+        <p style="font-size: 13px; color: var(--text-muted); text-align: center; padding: 10px;">Aún no tienes cartones cargados. Selecciona en el mercado de abajo y presiona "Cargar".</p>
       </div>
+    </div>
 
-      <button class="btn btn-danger" onclick="admReiniciar()" style="margin-top:15px;">🔄 Reiniciar Partida Nueva</button>
-      <button class="btn btn-secondary" onclick="location.reload()">Volver al Inicio</button>
+    <!-- Tablero General 1-75 -->
+    <div class="card">
+      <h3 style="font-size: 16px; color: var(--accent-pink); margin-bottom: 10px;">Tablero General (1-75)</h3>
+      <div class="tablero-grid" id="tableroJugador"></div>
+    </div>
+
+    <!-- Seleccionar Cartones (Mercado) -->
+    <div class="card">
+      <h3 style="font-size: 18px; color: var(--accent-pink); margin-bottom: 4px;">Selecciona tus Cartones</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Toca los cartones que deseas y presiona cargar.</p>
+      <div class="market-grid" id="mercadoCartones"></div>
+      <button class="btn btn-success" style="margin-top: 14px;" onclick="cargarCartonesSeleccionados()">🛒 Cargar / Confirmar Mis Cartones</button>
     </div>
   </div>
 
-  <script type="module">
+  <!-- PANTALLA 3: PANEL DE ADMINISTRADORA -->
+  <div id="pantalla-admin" class="hidden">
+    <div class="card">
+      <div class="card-title">👑 Panel Administradora</div>
+      
+      <!-- Controles de Canto -->
+      <div style="display:flex; gap: 8px; margin-bottom: 12px;">
+        <button class="btn btn-primary" onclick="cantarSiguienteBola()">🎲 Cantar Bola</button>
+        <button class="btn btn-warning" id="btnAutoCanto" onclick="toggleCantoAutomatico()">▶️ Canto Auto</button>
+      </div>
+
+      <!-- Configuración de Figura -->
+      <div class="form-group">
+        <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom:4px;">Figura Actual:</label>
+        <select id="selectFiguraAdmin" class="form-control" onchange="cambiarFigura(this.value)">
+          <option value="Cartón Lleno (Apagón)">Cartón Lleno (Apagón)</option>
+          <option value="Cuatro Esquinas">Cuatro Esquinas</option>
+          <option value="Línea Horizontal">Línea Horizontal</option>
+          <option value="Línea Vertical">Línea Vertical</option>
+        </select>
+      </div>
+
+      <button class="btn btn-danger" style="margin-bottom: 16px;" onclick="reiniciarPartida()">🔄 Reiniciar Partida</button>
+
+      <!-- Lista de Jugadores / Cartones Ocupados -->
+      <h4 style="font-size: 15px; color: var(--accent-yellow); margin-bottom: 8px;">Cartones Vendidos:</h4>
+      <div id="listaAdminCartones" style="max-height: 200px; overflow-y: auto; font-size: 13px;"></div>
+    </div>
+
+    <!-- Tablero General Admin -->
+    <div class="card">
+      <h3 style="font-size: 16px; color: var(--accent-pink); margin-bottom: 10px;">Control de Tablero</h3>
+      <div class="tablero-grid" id="tableroAdmin"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DE GANADOR -->
+  <div id="modalGanador" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2>🎉 ¡BINGO DETECTADO! 🎉</h2>
+      <p id="modalGanadorTexto" style="font-size: 16px; color: #fff; margin-bottom: 16px;"></p>
+      <div id="modalGanadorCartonContainer"></div>
+      <button class="btn btn-primary" style="margin-top: 16px;" onclick="cerrarModalGanador()">Entendido / Continuar</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- FIREBASE SDK & GAME LOGIC -->
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  
-const firebaseConfig = {
-  apiKey: "AIzaSyA7odiafJgukMu3S3WygWjtnQPbG9AT48U",
-  authDomain: "bingofamiliar-f99e0.firebaseapp.com",
-  databaseURL: "https://bingofamiliar-f99e0-default-rtdb.firebaseio.com",
-  projectId: "bingofamiliar-f99e0",
-  storageBucket: "bingofamiliar-f99e0.firebasestorage.app",
-  messagingSenderId: "1015749396232",
-  appId:  "1:1015749396232:web:92e5f8b207eefdc7a98ebd",
-  measurementId: "G-ETQ8B9M4YE"
-};
+  // Configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyA7odiafJgukMu3S3WygWjtnQ-EXAMPLE",
+    authDomain: "bingofamiliar-f99e0.firebaseapp.com",
+    databaseURL: "https://bingofamiliar-f99e0-default-rtdb.firebaseio.com",
+    projectId: "bingofamiliar-f99e0",
+    storageBucket: "bingofamiliar-f99e0.appspot.com",
+    messagingSenderId: "1015749396232",
+    appId: "1:1015749396232:web:92e5f8b207"
+  };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
+  // Generador de Cartones Estándar B I N G O (75 bolas)
+  function generarCarton(seed) {
+    const getCol = (min, max) => {
+      let nums = [];
+      for(let i=min; i<=max; i++) nums.push(i);
+      nums.sort(() => (Math.sin(seed++) * 10000) - Math.floor(Math.sin(seed++) * 10000));
+      return nums.slice(0, 5);
+    };
+
+    let b = getCol(1, 15);
+    let i = getCol(16, 30);
+    let n = getCol(31, 45);
+    let g = getCol(46, 60);
+    let o = getCol(61, 75);
+
+    n[2] = "★"; // Centro libre
+
+    let carton = [];
+    for(let r=0; r<5; r++) {
+      carton.push(b[r], i[r], n[r], g[r], o[r]);
+    }
+    return carton;
+  }
+
+  // Pre-generar 100 cartones estáticos
+  const BANCO_CARTONES = {};
+  for(let id=1; id<=100; id++) {
+    BANCO_CARTONES[id] = generarCarton(id * 777);
+  }
+
+  // Estado Local
+  let miNombre = "";
+  let miControl = "";
+  let misCartonesIDs = [];
+  let cartonesSeleccionadosTmp = [];
   let bolasCantadas = [];
   let cartonesOcupados = {};
-  let misCartones = [];
-  let seleccionados = [];
-  let miNombre = "";
-  let intervaloAuto = null;
-  let ganadorNotificado = false;
+  let figuraActual = "Cartón Lleno (Apagón)";
+  let autoCantoInterval = null;
+
+  // --- ESCUCHADORES DE TIEMPO REAL ---
+  onValue(ref(db, 'partida'), (snapshot) => {
+    const data = snapshot.val() || {};
+    bolasCantadas = data.bolas ? Object.values(data.bolas) : [];
+    figuraActual = data.figura || "Cartón Lleno (Apagón)";
+    cartonesOcupados = data.cartonesOcupados || {};
+
+    document.getElementById('figuraActualText').innerText = figuraActual;
+    document.getElementById('selectFiguraAdmin').value = figuraActual;
+
+    actualizarPantallaBolas();
+    actualizarTableros();
+    renderMisCartones();
+    renderMercado();
+    renderAdminCartones();
+    verificarGanadoresAuto();
+  });
+
+  // --- FUNCIONES EXPUESTAS AL WINDOW ---
+  window.entrarAlJuego = function() {
+    const nom = document.getElementById('inputNombre').value.trim();
+    const ctrl = document.getElementById('inputControl').value.trim();
+    if(!nom) return alert("Por favor ingresa tu nombre.");
+
+    miNombre = nom;
+    miControl = ctrl || Math.floor(100000 + Math.random() * 900000);
+
+    document.getElementById('userNombre').innerText = miNombre;
+    document.getElementById('userControl').innerText = miControl;
+
+    document.getElementById('pantalla-inicio').classList.add('hidden');
+    document.getElementById('pantalla-juego').classList.remove('hidden');
+  };
+
+  window.accesoAdmin = function() {
+    const pass = prompt("Clave de Administradora:");
+    if(pass === "1234") {
+      document.getElementById('pantalla-inicio').classList.add('hidden');
+      document.getElementById('pantalla-admin').classList.remove('hidden');
+    } else if(pass) {
+      alert("Clave incorrecta.");
+    }
+  };
+
+  window.seleccionarCartonMercado = function(id) {
+    if(cartonesOcupados[id] && cartonesOcupados[id].nombre !== miNombre) return;
+    
+    const index = cartonesSeleccionadosTmp.indexOf(id);
+    if(index > -1) {
+      cartonesSeleccionadosTmp.splice(index, 1);
+    } else {
+      cartonesSeleccionadosTmp.push(id);
+    }
+    renderMercado();
+  };
+
+  window.cargarCartonesSeleccionados = function() {
+    if(cartonesSeleccionadosTmp.length === 0) return alert("Selecciona al menos un cartón.");
+
+    cartonesSeleccionadosTmp.forEach(id => {
+      if(!misCartonesIDs.includes(id)) misCartonesIDs.push(id);
+      cartonesOcupados[id] = { nombre: miNombre, control: miControl };
+    });
+
+    set(ref(db, 'partida/cartonesOcupados'), cartonesOcupados);
+    cartonesSeleccionadosTmp = [];
+    alert("¡Cartones cargados con éxito! Ya quedaron asignados a tu cuenta.");
+  };
+
+  window.cantarSiguienteBola = function() {
+    if(bolasCantadas.length >= 75) return alert("¡Ya salieron las 75 bolas!");
+
+    let nuevaBola;
+    do {
+      nuevaBola = Math.floor(Math.random() * 75) + 1;
+    } while(bolasCantadas.includes(nuevaBola));
+
+    bolasCantadas.push(nuevaBola);
+    set(ref(db, 'partida/bolas'), bolasCantadas);
+
+    // Cantar bola con voz
+    if ('speechSynthesis' in window) {
+      let msg = new SpeechSynthesisUtterance("Bola " + nuevaBola);
+      msg.lang = 'es-ES';
+      window.speechSynthesis.speak(msg);
+    }
+  };
+
+  window.toggleCantoAutomatico = function() {
+    const btn = document.getElementById('btnAutoCanto');
+    if(autoCantoInterval) {
+      clearInterval(autoCantoInterval);
+      autoCantoInterval = null;
+      btn.innerText = "▶️ Canto Auto";
+      btn.classList.remove('btn-danger');
+      btn.classList.add('btn-warning');
+    } else {
+      autoCantoInterval = setInterval(() => {
+        if(bolasCantadas.length < 75) {
+          window.cantarSiguienteBola();
+        } else {
+          window.toggleCantoAutomatico();
+        }
+      }, 4000);
+      btn.innerText = "⏸️ Pausar Auto";
+      btn.classList.remove('btn-warning');
+      btn.classList.add('btn-danger');
+    }
+  };
 
   window.cambiarFigura = function(fig) {
     set(ref(db, 'partida/figura'), fig);
   };
 
-  onValue(ref(db, 'partida/bolas'), (snapshot) => {
-    const data = snapshot.val();
-    bolasCantadas = data ? Object.values(data) : [];
-    actualizarJuego();
-  });
+  window.eliminarCartonAdmin = function(id) {
+    if(confirm(`¿Deseas liberar/eliminar el Cartón #${id}?`)) {
+      delete cartonesOcupados[id];
+      set(ref(db, 'partida/cartonesOcupados'), cartonesOcupados);
+    }
+  };
 
-  onValue(ref(db, 'partida/figura'), (snapshot) => {
-    const fig = snapshot.val() || "Cuatro Esquinas";
-    const elLbl = document.getElementById('lbl-figura');
-    if (elLbl) elLbl.innerText = fig;
-  });
-
-  onValue(ref(db, 'cartonesOcupados'), (snapshot) => {
-    cartonesOcupados = snapshot.val() || {};
-    renderMercado();
-    renderAdminCartones();
-  });
-
-  function actualizarJuego() {
-    const ultima = bolasCantadas.length > 0 ? bolasCantadas[bolasCantadas.length - 1] : '--';
-    const elBola = document.getElementById('bola-actual-num');
-    if (elBola) elBola.innerText = ultima;
-
-    const containerU = document.getElementById('container-ultimas');
-    if (containerU) {
-      containerU.innerHTML = '';
-      bolasCantadas.slice(-5).reverse().forEach(b => {
-        containerU.innerHTML += `<div class="bola-mini">${b}</div>`;
+  window.reiniciarPartida = function() {
+    if(confirm("¿Segura que deseas reiniciar toda la partida?")) {
+      if(autoCantoInterval) window.toggleCantoAutomatico();
+      set(ref(db, 'partida'), {
+        bolas: [],
+        figura: "Cartón Lleno (Apagón)",
+        cartonesOcupados: {}
       });
     }
+  };
 
-    const elAdmBola = document.getElementById('adm-bola-actual');
-    if (elAdmBola) elAdmBola.innerText = ultima;
+  window.cerrarModalGanador = function() {
+    document.getElementById('modalGanador').classList.add('hidden');
+  };
 
-    const containerAdmU = document.getElementById('adm-container-ultimas');
-    if (containerAdmU) {
-      containerAdmU.innerHTML = '';
-      bolasCantadas.slice(-5).reverse().forEach(b => {
-        containerAdmU.innerHTML += `<div class="bola-mini">${b}</div>`;
-      });
+  // --- RENDERIZADO DE INTERFAZ ---
+  function actualizarPantallaBolas() {
+    const ultima = bolasCantadas[bolasCantadas.length - 1] || "--";
+    document.getElementById('bolaActualDisplay').innerText = ultima;
+
+    const ultimas = bolasCantadas.slice(-4, -1).reverse();
+    const container = document.getElementById('ultimasBolasContainer');
+    container.innerHTML = "";
+    for(let i=0; i<3; i++) {
+      const val = ultimas[i] || "--";
+      container.innerHTML += `<div class="mini-ball">${val}</div>`;
     }
-
-    for(let i=1; i<=75; i++) {
-      const el = document.getElementById(`t75-${i}`);
-      if(el) {
-        if(bolasCantadas.includes(i)) el.classList.add('cantado');
-        else el.classList.remove('cantado');
-      }
-    }
-
-    verificarGanadores();
   }
 
-  function verificarGanadores() {
-    if (bolasCantadas.length === 0 || ganadorNotificado) return;
-
-    const elFig = document.getElementById('lbl-figura');
-    const figuraActiva = elFig ? elFig.innerText : "Cuatro Esquinas";
-
-    Object.keys(cartonesOcupados).forEach(numC => {
-      const nums = generarNumerosCarton(parseInt(numC));
-      const nombreJugador = cartonesOcupados[numC];
-      let gano = false;
-
-      if (figuraActiva.includes("Cuatro Esquinas")) {
-        const esquinas = [0, 4, 20, 24];
-        gano = esquinas.every(idx => bolasCantadas.includes(nums[idx]) || nums[idx] === '★');
-      } else if (figuraActiva.includes("Cartón Lleno")) {
-        gano = nums.every(n => bolasCantadas.includes(n) || n === '★');
-      } else if (figuraActiva.includes("Línea Horizontal")) {
-        for (let f = 0; f < 5; f++) {
-          let filaCompleta = true;
-          for (let c = 0; c < 5; c++) {
-            let val = nums[f * 5 + c];
-            if (!bolasCantadas.includes(val) && val !== '★') filaCompleta = false;
-          }
-          if (filaCompleta) { gano = true; break; }
-        }
-      }
-
-      if (gano) {
-        ganadorNotificado = true;
-        alert(`🎉 ¡BINGO! El Cartón #${numC} de ${nombreJugador} ha GANADO con ${figuraActiva}!`);
+  function actualizarTableros() {
+    ['tableroJugador', 'tableroAdmin'].forEach(tableroId => {
+      const tab = document.getElementById(tableroId);
+      if(!tab) return;
+      tab.innerHTML = "";
+      for(let i=1; i<=75; i++) {
+        const active = bolasCantadas.includes(i) ? "active" : "";
+        tab.innerHTML += `<div class="tablero-cell ${active}">${i}</div>`;
       }
     });
   }
 
-  window.admReiniciar = function() {
-    if(confirm("¿Segura que deseas reiniciar la partida?")) {
-      if (intervaloAuto) clearInterval(intervaloAuto);
-      set(ref(db, 'partida/bolas'), null);
-      set(ref(db, 'cartonesOcupados'), null);
-      ganadorNotificado = false;
-    }
-  };
-window.entrarAlJuego = function() {
-  const nombre = document.getElementById('inputNombre').value;
-  if (!nombre) return alert("Por favor ingresa tu nombre");
-  miNombre = nombre;
-  document.getElementById('pantalla-inicio').style.display = 'none';
-  document.getElementById('pantalla-juego').style.display = 'block';
-};
+  function renderMercado() {
+    const grid = document.getElementById('mercadoCartones');
+    if(!grid) return;
+    grid.innerHTML = "";
 
-window.accesoAdmin = function() {
-  const clave = prompt("Ingresa la clave de Administradora:");
-  if (clave === "1234") {
-    document.getElementById('pantalla-inicio').style.display = 'none';
-    document.getElementById('pantalla-admin').style.display = 'block';
-  } else {
-    alert("Clave incorrecta");
+    let disponibles = 0;
+    for(let id=1; id<=100; id++) {
+      const ocupado = cartonesOcupados[id];
+      let stateClass = "";
+      if(ocupado) {
+        stateClass = "taken";
+      } else {
+        disponibles++;
+        if(cartonesSeleccionadosTmp.includes(id)) stateClass = "selected";
+      }
+      grid.innerHTML += `<button class="market-btn ${stateClass}" onclick="seleccionarCartonMercado(${id})">#${id}</button>`;
+    }
   }
-};    
+
+  function renderMisCartones() {
+    const container = document.getElementById('misCartonesContainer');
+    if(!container) return;
+
+    if(misCartonesIDs.length === 0) {
+      container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted); text-align: center; padding: 10px;">Aún no tienes cartones cargados. Selecciona en el mercado de abajo y presiona "Cargar".</p>`;
+      return;
+    }
+
+    container.innerHTML = "";
+    misCartonesIDs.forEach(id => {
+      const carton = BANCO_CARTONES[id];
+      let gridHTML = `
+        <div class="bingo-header-cell">B</div>
+        <div class="bingo-header-cell">I</div>
+        <div class="bingo-header-cell">N</div>
+        <div class="bingo-header-cell">G</div>
+        <div class="bingo-header-cell">O</div>
+      `;
+
+      let marcados = 0;
+      let faltantes = [];
+
+      carton.forEach((val) => {
+        let isMarked = val === "★" || bolasCantadas.includes(val);
+        if(isMarked) marcados++;
+        else faltantes.push(val);
+
+        let cellClass = isMarked ? (val === "★" ? "free" : "marked") : "";
+        gridHTML += `<div class="carton-cell ${cellClass}">${val}</div>`;
+      });
+
+      container.innerHTML += `
+        <div class="carton-card">
+          <div class="carton-header">
+            <span>Cartón #${id}</span>
+            <span style="color:var(--accent-green)">Marcados: ${marcados}/25</span>
+          </div>
+          <div class="carton-grid">${gridHTML}</div>
+          <div style="font-size: 11px; color: var(--accent-pink); margin-top: 8px;">
+            Le falta(n): ${faltantes.length > 0 ? faltantes.map(n => "#"+n).join(", ") : "¡BINGO!"}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function renderAdminCartones() {
+    const container = document.getElementById('listaAdminCartones');
+    if(!container) return;
+    container.innerHTML = "";
+
+    const keys = Object.keys(cartonesOcupados);
+    if(keys.length === 0) {
+      container.innerHTML = `<span style="color:var(--text-muted)">No hay cartones vendidos aún.</span>`;
+      return;
+    }
+
+    keys.forEach(id => {
+      const info = cartonesOcupados[id];
+      container.innerHTML += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#1e293b; padding:8px 12px; border-radius:8px; margin-bottom:4px;">
+          <span><strong>Cartón #${id}</strong> - ${info.nombre}</span>
+          <button class="btn btn-danger" style="width:auto; padding:4px 8px; font-size:11px;" onclick="eliminarCartonAdmin(${id})">Eliminar</button>
+        </div>
+      `;
+    });
+  }
+
+  function verificarGanadoresAuto() {
+    if(bolasCantadas.length === 0) return;
+
+    Object.keys(cartonesOcupados).forEach(id => {
+      const carton = BANCO_CARTONES[id];
+      const info = cartonesOcupados[id];
+
+      let gano = false;
+
+      if(figuraActual === "Cartón Lleno (Apagón)") {
+        gano = carton.every(val => val === "★" || bolasCantadas.includes(val));
+      } else if(figuraActual === "Cuatro Esquinas") {
+        const esquinas = [0, 4, 20, 24];
+        gano = esquinas.every(idx => carton[idx] === "★" || bolasCantadas.includes(carton[idx]));
+      }
+
+      if(gano) {
+        if(autoCantoInterval) window.toggleCantoAutomatico(); // Detener canto auto si hay ganador
+        
+        document.getElementById('modalGanadorTexto').innerText = `¡El Cartón #${id} de ${info.nombre} ha cantado BINGO!`;
+        document.getElementById('modalGanador').classList.remove('hidden');
+      }
+    });
+  }
 </script>
+
 </body>
 </html>
