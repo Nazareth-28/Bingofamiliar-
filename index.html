@@ -137,15 +137,22 @@
     .carton-cell {
       background: #1e293b; border-radius: 4px; padding: 4px 0; font-size: 11px; font-weight: 700; color: #cbd5e1;
       display: flex; align-items: center; justify-content: center; min-height: 25px;
+      border: 1px solid transparent;
     }
-    /* Estilo estándar marcados generales */
+    
+    /* Borde neón para las casillas de la figura en juego */
+    .carton-cell.figura-target {
+      border: 1px dashed var(--accent-pink);
+      box-shadow: inset 0 0 4px rgba(255, 42, 133, 0.3);
+    }
+
+    /* Marcados Estándar y Especial de Figura */
     .carton-cell.marked { background: var(--accent-yellow); color: #000; font-weight: 900; }
-    /* NUEVO ESTILO: Marcado especial para casillas que pertenecen a la figura en juego */
     .carton-cell.marked-figura { 
       background: linear-gradient(135deg, #d946ef, #8b5cf6); 
       color: #ffffff; 
       font-weight: 900; 
-      box-shadow: 0 0 6px rgba(217, 70, 239, 0.6); 
+      box-shadow: 0 0 6px rgba(217, 70, 239, 0.8); 
       border: 1px solid #f472b6;
     }
     .carton-cell.free { background: #3b82f6; color: white; font-size: 11px; }
@@ -168,14 +175,62 @@
     .market-btn.taken { background: #0f172a; color: #475569; border-color: #1e293b; cursor: not-allowed; opacity: 0.5; }
     .btn-preview { background: #334155; color: #fff; border: none; border-radius: 4px; padding: 2px 0; font-size: 9px; cursor: pointer; }
 
-    .tablero-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; }
-    .tablero-cell { background: #1e293b; border-radius: 3px; font-size: 9px; font-weight: 700; padding: 4px 0; text-align: center; color: #64748b; }
-    .tablero-cell.active { background: var(--accent-green); color: white; font-weight: 900; }
+    /* TABLERO GENERAL DE COLORES (B-I-N-G-O) */
+    .tablero-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
+    .tablero-cell { 
+      border-radius: 4px; 
+      font-size: 9px; 
+      font-weight: 800; 
+      padding: 4px 0; 
+      text-align: center; 
+      color: #334155; 
+      background: #1e293b;
+      opacity: 0.4;
+    }
+    
+    /* Colores por columna al estar activas */
+    .tablero-cell.col-b.active { background: #3b82f6; color: white; opacity: 1; box-shadow: 0 0 5px #3b82f6; } /* B: Azul */
+    .tablero-cell.col-i.active { background: #ef4444; color: white; opacity: 1; box-shadow: 0 0 5px #ef4444; } /* I: Rojo */
+    .tablero-cell.col-n.active { background: #f8fafc; color: #000; opacity: 1; box-shadow: 0 0 5px #f8fafc; } /* N: Blanco */
+    .tablero-cell.col-g.active { background: #10b981; color: white; opacity: 1; box-shadow: 0 0 5px #10b981; } /* G: Verde */
+    .tablero-cell.col-o.active { background: #a855f7; color: white; opacity: 1; box-shadow: 0 0 5px #a855f7; } /* O: Morado */
 
-    /* Modales */
+    /* MODAL BINGO DORADO ESTILO IMAGEN 2 */
     .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 12px; }
-    .modal-content { background: var(--bg-card); border-radius: 16px; padding: 16px; text-align: center; border: 2px solid var(--accent-pink); width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; }
-    .modal-content h2 { font-size: 20px; color: var(--accent-yellow); margin-bottom: 6px; }
+    .modal-gold-content {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-radius: 24px;
+      padding: 20px 16px;
+      text-align: center;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.6);
+      color: #000;
+    }
+    .modal-gold-header {
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 10px;
+    }
+    .modal-gold-banner {
+      background: #fef08a;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 16px;
+      font-weight: 900;
+      color: #000;
+      margin-bottom: 14px;
+    }
+    .carton-winner-box {
+      background: #0f172a;
+      border-radius: 16px;
+      padding: 12px;
+      color: #fff;
+    }
+
+    .modal-content-std { background: var(--bg-card); border-radius: 16px; padding: 16px; text-align: center; border: 2px solid var(--accent-pink); width: 100%; max-width: 380px; }
 
     .hidden { display: none !important; }
   </style>
@@ -192,6 +247,7 @@
   <!-- PANTALLA 1: REGISTRO -->
   <div id="pantalla-inicio" class="card">
     <div class="card-title">Registro de Jugadora</div>
+    <div id="msgReencuentro" style="font-size: 12px; color: var(--accent-green); text-align:center; font-weight:700; margin-bottom:8px;" class="hidden"></div>
     <div class="form-group">
       <input type="text" id="inputNombre" class="form-control" placeholder="Tu Nombre o Apodo">
     </div>
@@ -219,7 +275,7 @@
       </div>
 
       <div class="status-header-bar">
-        <div>👥 En línea: <strong id="cantOnline" style="color:var(--accent-green)">1</strong></div>
+        <div style="cursor:pointer;" onclick="mostrarListaOnline()">👥 En línea: <strong id="cantOnline" style="color:var(--accent-green)">1</strong></div>
         <button id="btnAudioToggle" class="btn btn-secondary" style="width:auto; padding: 3px 8px; margin:0; font-size:11px;" onclick="toggleAudio()">🔊 Sonido: ON</button>
       </div>
     </div>
@@ -303,7 +359,11 @@
         </select>
       </div>
 
-      <button class="btn btn-danger" style="margin-bottom: 10px;" onclick="reiniciarPartida()">🔄 Reiniciar Partida Completa</button>
+      <!-- BOTONES DE REINICIO DIFERENCIADOS -->
+      <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;">
+        <button class="btn btn-success" onclick="nuevaPartidaMantieneCartones()">🔄 Nueva Partida (Mantener Cartones)</button>
+        <button class="btn btn-danger" onclick="reiniciarPartidaCompleta()">⚠️ Reiniciar Todo (Borrar Cartones)</button>
+      </div>
 
       <h4 style="font-size: 13px; color: var(--accent-yellow); margin-bottom: 6px;">Cartones Vendidos y Estado de Pago:</h4>
       <div id="listaAdminCartones" style="max-height: 160px; overflow-y: auto; font-size: 11px;"></div>
@@ -315,20 +375,22 @@
     </div>
   </div>
 
-  <!-- MODAL BINGO DETECTADO -->
+  <!-- MODAL BINGO GANADOR (ESTILO DORADO) -->
   <div id="modalGanador" class="modal-overlay hidden">
-    <div class="modal-content">
-      <h2>🎉 ¡BINGO DETECTADO! 🎉</h2>
-      <p id="modalGanadorTexto" style="font-size: 14px; color: #fff; margin-bottom: 10px; font-weight: bold;"></p>
-      <div id="modalCartonGanadorDisplay" style="margin-bottom: 12px; max-width: 240px; margin-left: auto; margin-right: auto;"></div>
-      <button class="btn btn-primary" onclick="cerrarModalGanador()">Entendido / Continuar</button>
+    <div class="modal-gold-content">
+      <div class="modal-gold-header">👑 ¡BINGO! 👑</div>
+      <div class="modal-gold-banner" id="modalGanadorTexto">¡Tu Cartón hizo BINGO!</div>
+      <div class="carton-winner-box">
+        <div id="modalCartonGanadorDisplay"></div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:14px; background:#000; color:#fff;" onclick="cerrarModalGanador()">Cerrar y Ver Tablero</button>
     </div>
   </div>
 
   <!-- MODAL LUPITA PREVISUALIZACIÓN -->
   <div id="modalPreview" class="modal-overlay hidden">
-    <div class="modal-content">
-      <h2 id="previewCartonTitle">Cartón #--</h2>
+    <div class="modal-content-std">
+      <h2 id="previewCartonTitle" style="color:var(--accent-yellow); margin-bottom:8px;">Cartón #--</h2>
       <div id="modalPreviewDisplay" style="margin-bottom: 12px; max-width: 240px; margin-left: auto; margin-right: auto;"></div>
       <button class="btn btn-secondary" onclick="cerrarModalPreview()">Cerrar Vista Previa</button>
     </div>
@@ -392,8 +454,8 @@
 
   let esAdmin = false;
   let audioActivado = true;
-  let miNombre = "";
-  let miControl = "";
+  let miNombre = localStorage.getItem('bingo_userNombre') || "";
+  let miControl = localStorage.getItem('bingo_userControl') || "";
   let miSessionKey = Math.random().toString(36).substring(2, 9);
   let misCartonesIDs = JSON.parse(localStorage.getItem('misCartonesIDs') || '[]');
   let cartonesSeleccionadosTmp = [];
@@ -401,14 +463,25 @@
   let cartonesOcupados = {};
   let figuraActual = "Cartón Lleno (Apagón)";
   let autoCantoInterval = null;
+  let listaUsuariosOnline = {};
 
+  // Cargar datos previos si existen
+  if (miNombre && miControl) {
+    const msgEl = document.getElementById('msgReencuentro');
+    msgEl.innerText = `¡Hola de nuevo, ${miNombre}! Tus datos ya están listos.`;
+    msgEl.classList.remove('hidden');
+    document.getElementById('inputNombre').value = miNombre;
+    document.getElementById('inputControl').value = miControl;
+  }
+
+  // Registro de Presencia con Nombre
   const presencaref = ref(db, `presencia/${miSessionKey}`);
-  set(presencaref, true);
+  set(presencaref, { nombre: miNombre || "Anonimo", control: miControl || "--" });
   onDisconnect(presencaref).remove();
 
   onValue(ref(db, 'presencia'), (snap) => {
-    const val = snap.val() || {};
-    const count = Object.keys(val).length || 1;
+    listaUsuariosOnline = snap.val() || {};
+    const count = Object.keys(listaUsuariosOnline).length || 1;
     document.getElementById('cantOnline').innerText = count;
     document.querySelectorAll('.cantOnlineAdmin').forEach(el => el.innerText = count);
   });
@@ -440,6 +513,11 @@
     miNombre = nom;
     miControl = ctrl || Math.floor(100000 + Math.random() * 900000);
 
+    localStorage.setItem('bingo_userNombre', miNombre);
+    localStorage.setItem('bingo_userControl', miControl);
+
+    set(ref(db, `presencia/${miSessionKey}`), { nombre: miNombre, control: miControl });
+
     document.getElementById('userNombre').innerText = miNombre;
     document.getElementById('userControl').innerText = miControl;
 
@@ -456,6 +534,11 @@
     } else if(pass) {
       alert("Clave incorrecta.");
     }
+  };
+
+  window.mostrarListaOnline = function() {
+    const nombres = Object.values(listaUsuariosOnline).map(u => u.nombre).join(", ");
+    alert("Jugadoras en línea actualmente:\n\n" + (nombres || "Nadie más"));
   };
 
   window.toggleAudio = function() {
@@ -560,11 +643,20 @@
     }
   };
 
-  window.reiniciarPartida = function() {
-    if(confirm("¿Segura que deseas reiniciar la partida? Esto borrará también tus cartones locales de prueba.")) {
+  // NUEVA PARTIDA MANTENIENDO CARTONES COMPRADOS
+  window.nuevaPartidaMantieneCartones = function() {
+    if(confirm("¿Iniciar nueva partida? Se limpiará el tablero pero las jugadoras mantendrán sus cartones.")) {
       if(autoCantoInterval) window.toggleCantoAutomatico();
-      
-      localStorage.clear();
+      set(ref(db, 'partida/bolas'), []);
+      alert("¡Partida reiniciada! Los cartones siguen cargados.");
+    }
+  };
+
+  // REINICIO COMPLETO
+  window.reiniciarPartidaCompleta = function() {
+    if(confirm("¿Segura que deseas borrar TODO? Se liberarán todos los cartones.")) {
+      if(autoCantoInterval) window.toggleCantoAutomatico();
+      localStorage.removeItem('misCartonesIDs');
       misCartonesIDs = [];
 
       set(ref(db, 'partida'), {
@@ -572,8 +664,7 @@
         figura: "Cartón Lleno (Apagón)",
         cartonesOcupados: {}
       });
-      
-      alert("Partida reiniciada y memoria local limpiada.");
+      alert("Sistema reseteado por completo.");
     }
   };
 
@@ -611,6 +702,7 @@
     });
   }
 
+  // RENDERING DEL TABLERO GENERAL POR COLORES (B-I-N-G-O)
   function actualizarTableros() {
     ['tableroJugador', 'tableroAdmin'].forEach(tableroId => {
       const tab = document.getElementById(tableroId);
@@ -618,7 +710,13 @@
       tab.innerHTML = "";
       for(let i=1; i<=75; i++) {
         const active = bolasCantadas.includes(i) ? "active" : "";
-        tab.innerHTML += `<div class="tablero-cell ${active}">${i}</div>`;
+        let colClass = "col-o";
+        if (i <= 15) colClass = "col-b";
+        else if (i <= 30) colClass = "col-i";
+        else if (i <= 45) colClass = "col-n";
+        else if (i <= 60) colClass = "col-g";
+
+        tab.innerHTML += `<div class="tablero-cell ${colClass} ${active}">${i}</div>`;
       }
     });
   }
@@ -730,14 +828,14 @@
       if(figuraActual === "Línea Horizontal" && (idx >= 0 && idx <= 4)) esCasillaDeFigura = true;
       if(figuraActual === "Línea Vertical" && (idx % 5 === 0)) esCasillaDeFigura = true;
 
-      let cellClass = "";
+      let cellClass = esCasillaDeFigura ? "figura-target " : "";
       if(isMarked) {
         if(val === "★") {
-          cellClass = "free";
+          cellClass += "free";
         } else if(esCasillaDeFigura) {
-          cellClass = "marked-figura"; // Color morado/rosado brillante para la figura
+          cellClass += "marked-figura";
         } else {
-          cellClass = "marked"; // Color amarillo estándar para números marcados fuera de la figura
+          cellClass += "marked";
         }
       }
 
@@ -838,13 +936,8 @@
       if(gano) {
         if(autoCantoInterval) window.toggleCantoAutomatico();
         
-        document.getElementById('modalGanadorTexto').innerText = `¡El Cartón #${id} de ${info.nombre} ha cantado BINGO con ${figuraActual}!`;
-        
-        if (esAdmin) {
-          document.getElementById('modalCartonGanadorDisplay').innerHTML = generarHTMLCarton(id, carton, false);
-        } else {
-          document.getElementById('modalCartonGanadorDisplay').innerHTML = "";
-        }
+        document.getElementById('modalGanadorTexto').innerText = `¡Tu Cartón #${id} hizo BINGO con ${figuraActual}!`;
+        document.getElementById('modalCartonGanadorDisplay').innerHTML = generarHTMLCarton(id, carton, false);
 
         document.getElementById('modalGanador').classList.remove('hidden');
       }
