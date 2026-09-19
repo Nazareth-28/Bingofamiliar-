@@ -117,7 +117,7 @@
     }
 
     .mis-cartones-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .carton-card { background: #0f172a; border-radius: 12px; padding: 8px; border: 1px solid #334155; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+    .carton-card { background: #0f172a; border-radius: 12px; padding: 8px; border: 1px solid #334155; position: relative; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 8px; }
     .carton-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; font-weight: 700; }
     .carton-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; text-align: center; }
     .bingo-header-cell { font-weight: 900; color: var(--accent-pink); padding: 1px; font-size: 11px; }
@@ -174,36 +174,24 @@
     .tablero-cell.col-g.active { background: #10b981; color: white; opacity: 1; box-shadow: 0 0 5px #10b981; }
     .tablero-cell.col-o.active { background: #a855f7; color: white; opacity: 1; box-shadow: 0 0 5px #a855f7; }
 
-    /* MODAL BINGO DORADO (JUGADORA GANADORA) */
-    .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 12px; }
-    .modal-gold-content {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      border-radius: 24px;
-      padding: 20px 16px;
-      text-align: center;
-      width: 100%;
-      max-width: 380px;
-      box-shadow: 0 0 30px rgba(245, 158, 11, 0.6);
-      color: #000;
-    }
-    .modal-gold-header { font-size: 28px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); margin-bottom: 10px; }
-    .modal-gold-banner { background: #fef08a; border-radius: 12px; padding: 10px; font-size: 16px; font-weight: 900; color: #000; margin-bottom: 14px; }
-    
-    /* MODAL BINGO DETECTADO (ADMINISTRADORA - IMAGEN 1) */
-    .modal-admin-content {
+    /* ESTILO OFICIAL BINGO DETECTADO (FONDO OSCURO CON BORDE NEÓN PINK - IGUAL A TU IMAGEN) */
+    .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 12px; }
+    .modal-pink-content {
       background: #151e32;
-      border-radius: 24px;
+      border: 3px solid #ff2a85;
+      border-radius: 28px;
       padding: 20px 16px;
       text-align: center;
       width: 100%;
-      max-width: 380px;
-      border: 3px solid #ff2a85;
-      box-shadow: 0 0 30px rgba(255, 42, 133, 0.5);
+      max-width: 420px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 35px rgba(255, 42, 133, 0.5);
       color: #fff;
     }
-    .modal-admin-header { font-size: 22px; font-weight: 900; color: #ff2a85; margin-bottom: 8px; }
+    .modal-pink-header { font-size: 24px; font-weight: 900; color: #ff2a85; margin-bottom: 4px; text-transform: uppercase; }
+    .modal-pink-sub { font-size: 13px; font-weight: 700; color: #cbd5e1; margin-bottom: 12px; }
 
-    .carton-winner-box { background: #0f172a; border-radius: 16px; padding: 12px; color: #fff; }
     .modal-content-std { background: var(--bg-card); border-radius: 16px; padding: 16px; text-align: center; border: 2px solid var(--accent-pink); width: 100%; max-width: 380px; }
 
     .hidden { display: none !important; }
@@ -313,10 +301,23 @@
         </div>
       </div>
 
-      <div style="display:flex; gap: 6px; margin-bottom: 10px;">
+      <div style="display:flex; gap: 6px; margin-bottom: 8px;">
         <button class="btn btn-primary" onclick="cantarSiguienteBola()">🎲 Cantar Bola</button>
         <button class="btn btn-warning" id="btnAutoCanto" onclick="toggleCantoAutomatico()">▶️ Canto Auto</button>
       </div>
+
+      <!-- CONTROL DE VELOCIDAD DE SALIDA DE BOLAS -->
+      <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+        <label style="font-size: 11px; color: var(--text-muted); white-space:nowrap;">⚡ Velocidad:</label>
+        <select id="selectVelocidad" class="form-control" style="padding:6px; font-size:11px;" onchange="cambiarVelocidad(this.value)">
+          <option value="6000">Lento (6 seg)</option>
+          <option value="4000" selected>Normal (4 seg)</option>
+          <option value="2000">Rápido (2 seg)</option>
+        </select>
+      </div>
+
+      <!-- BOTÓN PARA RE-VER EL ÚLTIMO BINGO SUCEDIDO -->
+      <button class="btn btn-secondary" style="margin-bottom: 10px; background:#8b5cf6;" onclick="verUltimoBingo()">🏆 Ver Último Bingo</button>
 
       <div class="form-group">
         <label style="font-size: 10px; color: var(--text-muted); display:block; margin-bottom:2px;">Figura Actual:</label>
@@ -348,10 +349,16 @@
     </div>
   </div>
 
-  <!-- MODAL CONTENEDOR BINGO -->
+  <!-- MODAL BINGO DETECTADO (SISTEMA OFICIAL ROSADO/OSCURO) -->
   <div id="modalGanador" class="modal-overlay hidden">
-    <!-- El contenido se inyecta dinámicamente según sea Admin o Jugadora Ganadora -->
-    <div id="modalGanadorInner"></div>
+    <div class="modal-pink-content">
+      <div class="modal-pink-header">🎉 ¡BINGO DETECTADO! 🎉</div>
+      <div class="modal-pink-sub" id="modalGanadorSubtext">¡Comprobando jugada!</div>
+      
+      <div id="modalGanadorBody" style="max-height: 380px; overflow-y: auto; margin-bottom: 12px;"></div>
+
+      <button class="btn btn-primary" onclick="cerrarModalGanador()">Entendido / Continuar</button>
+    </div>
   </div>
 
   <!-- MODAL LUPITA PREVISUALIZACIÓN -->
@@ -439,6 +446,8 @@
   let cartonesOcupados = {};
   let figuraActual = "Cartón Lleno (Apagón)";
   let autoCantoInterval = null;
+  let velocidadCanto = 4000; // 4 segundos por defecto
+  let ultimoBingoData = null; // Guarda el historial del último bingo
   let listaUsuariosOnline = {};
 
   if (miNombre && miControl) {
@@ -519,7 +528,7 @@
       display.innerHTML = "<em>No hay nadie más en línea.</em>";
     } else {
       usuarios.forEach((u, i) => {
-        display.innerHTML += `<div><strong>${i+1}. ${u.nombre}</strong> <span style="color:var(--text-muted); font-size:10px;">(ID: ${u.control})</span></div>`;
+        display.innerHTML += `<div><strong>${i+1}. ${u.nombre}</strong> <span style="color:var(--text-muted); font-size:10px;">(Ctrl: ${u.control})</span></div>`;
       });
     }
 
@@ -535,6 +544,14 @@
     const txt = audioActivado ? "🔊 Sonido: ON" : "🔇 Sonido: OFF";
     document.getElementById('btnAudioToggle').innerText = txt;
     document.querySelectorAll('.btnAudioToggleAdmin').forEach(el => el.innerText = txt);
+  };
+
+  window.cambiarVelocidad = function(val) {
+    velocidadCanto = parseInt(val);
+    if(autoCantoInterval) {
+      window.toggleCantoAutomatico();
+      window.toggleCantoAutomatico();
+    }
   };
 
   window.previewCartonModal = function(id) {
@@ -614,7 +631,7 @@
         } else {
           window.toggleCantoAutomatico();
         }
-      }, 4000);
+      }, velocidadCanto);
       btn.innerText = "⏸️ Pausar Auto";
       btn.classList.remove('btn-warning');
       btn.classList.add('btn-danger');
@@ -635,6 +652,7 @@
   window.nuevaPartidaMantieneCartones = function() {
     if(confirm("¿Iniciar nueva partida? Se limpiará el tablero pero las jugadoras mantendrán sus cartones.")) {
       if(autoCantoInterval) window.toggleCantoAutomatico();
+      ultimoBingoData = null;
       set(ref(db, 'partida/bolas'), []);
       alert("¡Partida reiniciada! Los cartones siguen cargados.");
     }
@@ -645,6 +663,7 @@
       if(autoCantoInterval) window.toggleCantoAutomatico();
       localStorage.removeItem('misCartonesIDs');
       misCartonesIDs = [];
+      ultimoBingoData = null;
 
       set(ref(db, 'partida'), {
         bolas: [],
@@ -653,6 +672,11 @@
       });
       alert("Sistema reseteado por completo.");
     }
+  };
+
+  window.verUltimoBingo = function() {
+    if(!ultimoBingoData) return alert("Aún no se ha registrado ningún Bingo en esta partida.");
+    mostrarModalGanadores(ultimoBingoData);
   };
 
   window.cerrarModalGanador = function() {
@@ -890,11 +914,11 @@
     });
   }
 
-  // LÓGICA DE DETECCIÓN Y MODALES DIFERENCIADOS
   function verificarGanadoresAuto() {
     if(bolasCantadas.length === 0) return;
 
     const isMarked = (val) => val === "★" || bolasCantadas.includes(val);
+    let ganadores = [];
 
     Object.keys(cartonesOcupados).forEach(id => {
       const carton = BANCO_CARTONES[id];
@@ -921,52 +945,41 @@
       }
 
       if(gano) {
-        if(autoCantoInterval) window.toggleCantoAutomatico();
-        
-        const innerContainer = document.getElementById('modalGanadorInner');
-
-        if (esAdmin) {
-          // MODAL PARA TI COMO ADMINISTRADORA (IMAGEN 1)
-          innerContainer.innerHTML = `
-            <div class="modal-admin-content">
-              <div class="modal-admin-header">🎉 ¡BINGO DETECTADO! 🎉</div>
-              <p style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #fff;">
-                ¡El Cartón #${id} de ${info.nombre} ha cantado BINGO con ${figuraActual}!
-              </p>
-              <div class="carton-winner-box">
-                ${generarHTMLCarton(id, carton, false)}
-              </div>
-              <button class="btn btn-primary" style="margin-top: 14px;" onclick="cerrarModalGanador()">Entendido / Continuar</button>
-            </div>
-          `;
-        } else if (info.nombre === miNombre) {
-          // MODAL PARA EL JUGADOR QUE GANÓ (IMAGEN 2 - TARJETA DORADA)
-          innerContainer.innerHTML = `
-            <div class="modal-gold-content">
-              <div class="modal-gold-header">👑 ¡BINGO! 👑</div>
-              <div class="modal-gold-banner">¡Tu Cartón #${id} hizo BINGO!</div>
-              <div class="carton-winner-box">
-                ${generarHTMLCarton(id, carton, false)}
-              </div>
-              <button class="btn btn-primary" style="margin-top:14px; background:#000; color:#fff;" onclick="cerrarModalGanador()">Cerrar y Ver Tablero</button>
-            </div>
-          `;
-        } else {
-          // MODAL PARA OTROS JUGADORES / ESPECTADORES
-          innerContainer.innerHTML = `
-            <div class="modal-admin-content" style="border-color: #f59e0b;">
-              <div class="modal-admin-header" style="color: #f59e0b;">🎉 ¡HAY UN GANADOR! 🎉</div>
-              <p style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #fff;">
-                ¡El Cartón #${id} de ${info.nombre} ha cantado BINGO con ${figuraActual}!
-              </p>
-              <button class="btn btn-primary" style="margin-top: 14px;" onclick="cerrarModalGanador()">Entendido / Ver Tablero</button>
-            </div>
-          `;
-        }
-
-        document.getElementById('modalGanador').classList.remove('hidden');
+        ganadores.push({ id, carton, nombre: info.nombre });
       }
     });
+
+    if(ganadores.length > 0) {
+      if(autoCantoInterval) window.toggleCantoAutomatico();
+      ultimoBingoData = ganadores; // Almacena para el botón 'Ver Último Bingo'
+      mostrarModalGanadores(ganadores);
+    }
+  }
+
+  // DESPLIEGUE DEL MODAL EN FORMATO ROSADO/OSCURO OFICIAL
+  function mostrarModalGanadores(ganadores) {
+    const subtextEl = document.getElementById('modalGanadorSubtext');
+    const modalBody = document.getElementById('modalGanadorBody');
+    modalBody.innerHTML = "";
+
+    if (ganadores.length === 1) {
+      subtextEl.innerText = `¡El Cartón #${ganadores[0].id} de ${ganadores[0].nombre} ha cantado BINGO con ${figuraActual}!`;
+    } else {
+      subtextEl.innerText = `¡${ganadores.length} personas cantaron BINGO simultáneamente con ${figuraActual}!`;
+    }
+
+    ganadores.forEach(g => {
+      modalBody.innerHTML += `
+        <div style="margin-bottom: 14px; text-align: left;">
+          <div style="font-size: 13px; font-weight: 800; color: var(--accent-pink); margin-bottom: 4px;">
+            🎉 Cartón #${g.id} de ${g.nombre}
+          </div>
+          ${generarHTMLCarton(g.id, g.carton, false)}
+        </div>
+      `;
+    });
+
+    document.getElementById('modalGanador').classList.remove('hidden');
   }
 </script>
 
