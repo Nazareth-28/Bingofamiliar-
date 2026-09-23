@@ -99,6 +99,40 @@
 
     .status-header-bar { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 6px 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155; font-size: 11px; }
 
+    /* SECCIÓN EXCLUSIVA DE CONECTADOS PARA LA ADMIN */
+    .online-box-admin {
+      background: #0f172a;
+      border: 1px solid var(--accent-pink);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    .online-box-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-pink);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .online-users-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+    .online-user-item {
+      background: #1e293b;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      color: #f8fafc;
+    }
+
     .ball-container { background: var(--bg-card); border-radius: 16px; padding: 10px; text-align: center; border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 12px; }
     .ball-title { font-size: 11px; font-weight: 800; color: var(--accent-yellow); letter-spacing: 0.5px; margin-bottom: 4px; }
     .main-ball-flex { display: flex; align-items: center; justify-content: space-around; }
@@ -174,7 +208,6 @@
     .tablero-cell.col-g.active { background: #10b981; color: white; opacity: 1; box-shadow: 0 0 5px #10b981; }
     .tablero-cell.col-o.active { background: #a855f7; color: white; opacity: 1; box-shadow: 0 0 5px #a855f7; }
 
-    /* ESTILO OFICIAL BINGO DETECTADO (FONDO OSCURO CON BORDE NEÓN PINK - IGUAL A TU IMAGEN) */
     .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 12px; }
     .modal-pink-content {
       background: #151e32;
@@ -220,7 +253,7 @@
     <button class="btn btn-secondary" onclick="accesoAdmin()">🔑 Acceso Administradora</button>
   </div>
 
-  <!-- PANTALLA 2: VISTA DE JUGADORA / ESPECTADOR -->
+  <!-- PANTALLA 2: VISTA DE JUGADORA / ESPECTADOR (SIN LISTA DE CONECTADOS) -->
   <div id="pantalla-juego" class="hidden">
     <div class="card" style="padding: 10px;">
       <div class="top-bar">
@@ -236,8 +269,7 @@
         </div>
       </div>
 
-      <div class="status-header-bar">
-        <div style="cursor:pointer;" onclick="mostrarListaOnline()">👥 En línea: <strong id="cantOnline" style="color:var(--accent-green)">1</strong> (Toca para ver)</div>
+      <div class="status-header-bar" style="justify-content: flex-end;">
         <button id="btnAudioToggle" class="btn btn-secondary" style="width:auto; padding: 3px 8px; margin:0; font-size:11px;" onclick="toggleAudio()">🔊 Sonido: ON</button>
       </div>
     </div>
@@ -277,13 +309,23 @@
     </div>
   </div>
 
-  <!-- PANTALLA 3: PANEL DE ADMINISTRADORA -->
+  <!-- PANTALLA 3: PANEL DE ADMINISTRADORA (CON LISTA DIRECTA Y EXCLUSIVA) -->
   <div id="pantalla-admin" class="hidden">
     <div class="card">
       <div class="card-title">👑 Panel Administradora</div>
+
+      <!-- RECUADRO DE CONECTADOS VISIBLE DIRECTAMENTE SÓLO PARA ADMIN -->
+      <div class="online-box-admin">
+        <div class="online-box-title">
+          <span>👥 Conectados en Vivo (<span class="cantOnlineAdmin">0</span>)</span>
+          <span style="font-size:9px; color:var(--accent-green);">● En Vivo</span>
+        </div>
+        <div class="online-users-list" id="listaDirectaOnlineAdmin">
+          <div style="color:var(--text-muted); font-size:11px;">Cargando lista...</div>
+        </div>
+      </div>
       
-      <div class="status-header-bar">
-        <div style="cursor:pointer;" onclick="mostrarListaOnline()">👥 En línea: <strong class="cantOnlineAdmin" style="color:var(--accent-green)">1</strong> (Ver lista)</div>
+      <div class="status-header-bar" style="justify-content: flex-end;">
         <button class="btn btn-secondary btnAudioToggleAdmin" style="width:auto; padding: 3px 8px; margin:0; font-size:11px;" onclick="toggleAudio()">🔊 Sonido: ON</button>
       </div>
 
@@ -306,7 +348,7 @@
         <button class="btn btn-warning" id="btnAutoCanto" onclick="toggleCantoAutomatico()">▶️ Canto Auto</button>
       </div>
 
-      <!-- CONTROL DE VELOCIDAD DE SALIDA DE BOLAS -->
+      <!-- CONTROL DE VELOCIDAD -->
       <div class="form-group" style="display:flex; align-items:center; gap:8px;">
         <label style="font-size: 11px; color: var(--text-muted); white-space:nowrap;">⚡ Velocidad:</label>
         <select id="selectVelocidad" class="form-control" style="padding:6px; font-size:11px;" onchange="cambiarVelocidad(this.value)">
@@ -316,7 +358,6 @@
         </select>
       </div>
 
-      <!-- BOTÓN PARA RE-VER EL ÚLTIMO BINGO SUCEDIDO -->
       <button class="btn btn-secondary" style="margin-bottom: 10px; background:#8b5cf6;" onclick="verUltimoBingo()">🏆 Ver Último Bingo</button>
 
       <div class="form-group">
@@ -349,7 +390,7 @@
     </div>
   </div>
 
-  <!-- MODAL BINGO DETECTADO (SISTEMA OFICIAL ROSADO/OSCURO) -->
+  <!-- MODAL BINGO DETECTADO -->
   <div id="modalGanador" class="modal-overlay hidden">
     <div class="modal-pink-content">
       <div class="modal-pink-header">🎉 ¡BINGO DETECTADO! 🎉</div>
@@ -370,20 +411,11 @@
     </div>
   </div>
 
-  <!-- MODAL USUARIOS EN LÍNEA -->
-  <div id="modalOnlineUsers" class="modal-overlay hidden">
-    <div class="modal-content-std">
-      <h2 style="color:var(--accent-pink); margin-bottom:10px;">👥 Conectados en Vivo</h2>
-      <div id="listaNombresOnlineDisplay" style="max-height:200px; overflow-y:auto; text-align:left; font-size:12px; margin-bottom:12px; line-height:1.6;"></div>
-      <button class="btn btn-secondary" onclick="cerrarModalOnline()">Cerrar</button>
-    </div>
-  </div>
-
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyA7odiafJgukMu3S3WygWjtnQ-EXAMPLE",
@@ -439,16 +471,16 @@
   let audioActivado = true;
   let miNombre = localStorage.getItem('bingo_userNombre') || "";
   let miControl = localStorage.getItem('bingo_userControl') || "";
-  let miSessionKey = Math.random().toString(36).substring(2, 9);
   let misCartonesIDs = JSON.parse(localStorage.getItem('misCartonesIDs') || '[]');
   let cartonesSeleccionadosTmp = [];
   let bolasCantadas = [];
   let cartonesOcupados = {};
   let figuraActual = "Cartón Lleno (Apagón)";
   let autoCantoInterval = null;
-  let velocidadCanto = 4000; // 4 segundos por defecto
-  let ultimoBingoData = null; // Guarda el historial del último bingo
+  let velocidadCanto = 4000;
+  let ultimoBingoData = null;
   let listaUsuariosOnline = {};
+  let heartbeatInterval = null;
 
   if (miNombre && miControl) {
     const msgEl = document.getElementById('msgReencuentro');
@@ -456,18 +488,75 @@
     msgEl.classList.remove('hidden');
     document.getElementById('inputNombre').value = miNombre;
     document.getElementById('inputControl').value = miControl;
+    iniciarPresenciaReal();
   }
 
-  const presencaref = ref(db, `presencia/${miSessionKey}`);
-  set(presencaref, { nombre: miNombre || "Espectador", control: miControl || "--" });
-  onDisconnect(presencaref).remove();
+  // PRESENCIA EN TIEMPO REAL: ELIMINA DUPLICADOS POR USUARIO Y LIMPIA EN 10 SEGUNDOS
+  function iniciarPresenciaReal() {
+    if (!miNombre) return;
 
+    // Clave basada exactamente en Nombre y Control para que nunca se duplique
+    const userCleanKey = (miNombre.trim() + "_" + miControl.trim()).toLowerCase().replace(/[^a-z0-9]/g, "_");
+    const userPresenceRef = ref(db, `presencia/${userCleanKey}`);
+
+    const updatePresence = () => {
+      set(userPresenceRef, {
+        nombre: miNombre,
+        control: miControl,
+        lastActive: Date.now()
+      });
+    };
+
+    updatePresence();
+    onDisconnect(userPresenceRef).remove();
+
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    heartbeatInterval = setInterval(updatePresence, 5000); // Envía pulso cada 5 segs
+
+    window.addEventListener('beforeunload', () => remove(userPresenceRef));
+    window.addEventListener('pagehide', () => remove(userPresenceRef));
+  }
+
+  // ESCUCHADOR DE PRESENCIA (DESCONECTA A CUALQUIERA SIN PULSO DE HACE MÁS DE 10 SEGUNDOS)
   onValue(ref(db, 'presencia'), (snap) => {
-    listaUsuariosOnline = snap.val() || {};
-    const count = Object.keys(listaUsuariosOnline).length || 1;
-    document.getElementById('cantOnline').innerText = count;
-    document.querySelectorAll('.cantOnlineAdmin').forEach(el => el.innerText = count);
+    const val = snap.val() || {};
+    const ahora = Date.now();
+    listaUsuariosOnline = {};
+
+    Object.keys(val).forEach(key => {
+      const u = val[key];
+      // Si el usuario no ha enviado señal en 10 segundos, no se muestra
+      if (u.lastActive && (ahora - u.lastActive) < 10000) {
+        listaUsuariosOnline[key] = u;
+      }
+    });
+
+    actualizarListaOnlineDirectaAdmin();
   });
+
+  function actualizarListaOnlineDirectaAdmin() {
+    const usuarios = Object.values(listaUsuariosOnline);
+    const count = usuarios.length;
+
+    document.querySelectorAll('.cantOnlineAdmin').forEach(el => el.innerText = count);
+
+    const container = document.getElementById('listaDirectaOnlineAdmin');
+    if (!container) return;
+
+    if (usuarios.length === 0) {
+      container.innerHTML = `<div style="color:var(--text-muted); font-size:11px; text-align:center;">Nadie conectado en este momento</div>`;
+    } else {
+      container.innerHTML = "";
+      usuarios.forEach((u, i) => {
+        container.innerHTML += `
+          <div class="online-user-item">
+            <span><strong>${i+1}. ${u.nombre}</strong></span>
+            <span style="color:var(--text-muted); font-size:10px;">Control: ${u.control}</span>
+          </div>
+        `;
+      });
+    }
+  }
 
   onValue(ref(db, 'partida'), (snapshot) => {
     const data = snapshot.val() || {};
@@ -494,12 +583,12 @@
 
     esAdmin = false;
     miNombre = nom;
-    miControl = ctrl || Math.floor(100000 + Math.random() * 900000);
+    miControl = ctrl || "1";
 
     localStorage.setItem('bingo_userNombre', miNombre);
     localStorage.setItem('bingo_userControl', miControl);
 
-    set(ref(db, `presencia/${miSessionKey}`), { nombre: miNombre, control: miControl });
+    iniciarPresenciaReal();
 
     document.getElementById('userNombre').innerText = miNombre;
     document.getElementById('userControl').innerText = miControl;
@@ -514,29 +603,10 @@
       esAdmin = true;
       document.getElementById('pantalla-inicio').classList.add('hidden');
       document.getElementById('pantalla-admin').classList.remove('hidden');
+      actualizarListaOnlineDirectaAdmin();
     } else if(pass) {
       alert("Clave incorrecta.");
     }
-  };
-
-  window.mostrarListaOnline = function() {
-    const display = document.getElementById('listaNombresOnlineDisplay');
-    display.innerHTML = "";
-    
-    const usuarios = Object.values(listaUsuariosOnline);
-    if(usuarios.length === 0) {
-      display.innerHTML = "<em>No hay nadie más en línea.</em>";
-    } else {
-      usuarios.forEach((u, i) => {
-        display.innerHTML += `<div><strong>${i+1}. ${u.nombre}</strong> <span style="color:var(--text-muted); font-size:10px;">(Ctrl: ${u.control})</span></div>`;
-      });
-    }
-
-    document.getElementById('modalOnlineUsers').classList.remove('hidden');
-  };
-
-  window.cerrarModalOnline = function() {
-    document.getElementById('modalOnlineUsers').classList.add('hidden');
   };
 
   window.toggleAudio = function() {
@@ -951,12 +1021,11 @@
 
     if(ganadores.length > 0) {
       if(autoCantoInterval) window.toggleCantoAutomatico();
-      ultimoBingoData = ganadores; // Almacena para el botón 'Ver Último Bingo'
+      ultimoBingoData = ganadores;
       mostrarModalGanadores(ganadores);
     }
   }
 
-  // DESPLIEGUE DEL MODAL EN FORMATO ROSADO/OSCURO OFICIAL
   function mostrarModalGanadores(ganadores) {
     const subtextEl = document.getElementById('modalGanadorSubtext');
     const modalBody = document.getElementById('modalGanadorBody');
@@ -968,16 +1037,26 @@
       subtextEl.innerText = `¡${ganadores.length} personas cantaron BINGO simultáneamente con ${figuraActual}!`;
     }
 
-    ganadores.forEach(g => {
-      modalBody.innerHTML += `
-        <div style="margin-bottom: 14px; text-align: left;">
-          <div style="font-size: 13px; font-weight: 800; color: var(--accent-pink); margin-bottom: 4px;">
-            🎉 Cartón #${g.id} de ${g.nombre}
+    // SI ES ADMIN: MUESTRA LOS CARTONES
+    if (esAdmin) {
+      ganadores.forEach(g => {
+        modalBody.innerHTML += `
+          <div style="margin-bottom: 14px; text-align: left;">
+            <div style="font-size: 13px; font-weight: 800; color: var(--accent-pink); margin-bottom: 4px;">
+              🎉 Cartón #${g.id} de ${g.nombre}
+            </div>
+            ${generarHTMLCarton(g.id, g.carton, false)}
           </div>
-          ${generarHTMLCarton(g.id, g.carton, false)}
+        `;
+      });
+    } else {
+      // SI ES JUGADORA: SOLO TEXTO DE NOTIFICACIÓN
+      modalBody.innerHTML = `
+        <div style="padding: 20px; text-align: center; font-size: 16px; font-weight: 800; color: #10b981;">
+          📢 ¡Felicidades! Se ha registrado Bingo en esta partida.
         </div>
       `;
-    });
+    }
 
     document.getElementById('modalGanador').classList.remove('hidden');
   }
