@@ -100,7 +100,6 @@
 
     .status-header-bar { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 6px 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155; font-size: 11px; }
 
-    /* SECCIÓN EXCLUSIVA DE CONECTADOS PARA LA ADMIN */
     .online-box-admin {
       background: #0f172a;
       border: 1px solid var(--accent-pink);
@@ -136,7 +135,6 @@
       border: 1px solid transparent;
     }
     
-    /* FRANJA AZUL: ESPERANDO 1 BOLA */
     .online-user-item.waiting-one {
       background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%) !important;
       border: 1px solid #38bdf8 !important;
@@ -276,7 +274,7 @@
     <button class="btn btn-secondary" onclick="accesoAdmin()">🔑 Acceso Administradora</button>
   </div>
 
-  <!-- PANTALLA 2: VISTA DE JUGADORA / ESPECTADOR (SIN LISTA DE CONECTADOS) -->
+  <!-- PANTALLA 2: VISTA DE JUGADORA / ESPECTADOR -->
   <div id="pantalla-juego" class="hidden">
     <div class="card" style="padding: 10px;">
       <div class="top-bar">
@@ -333,12 +331,11 @@
     </div>
   </div>
 
-  <!-- PANTALLA 3: PANEL DE ADMINISTRADORA (CON CONECTADOS Y AVISO EN AZUL) -->
+  <!-- PANTALLA 3: PANEL DE ADMINISTRADORA -->
   <div id="pantalla-admin" class="hidden">
     <div class="card">
       <div class="card-title">👑 Panel Administradora</div>
 
-      <!-- RECUADRO DE CONECTADOS VISIBLE EN VIVO CON RESALTE AZUL -->
       <div class="online-box-admin">
         <div class="online-box-title">
           <span>👥 Conectados en Vivo (<span class="cantOnlineAdmin">0</span>)</span>
@@ -555,7 +552,6 @@
     actualizarListaOnlineDirectaAdmin();
   });
 
-  // CALCULA SI UN JUGADOR TIENE AL MENOS UN CARTÓN ESPERANDO 1 BOLA
   function usuarioEsperandoUnaBola(nombreJugador) {
     const cartonesJugador = Object.keys(cartonesOcupados).filter(id => cartonesOcupados[id].nombre === nombreJugador);
     for (let id of cartonesJugador) {
@@ -599,6 +595,18 @@
     bolasCantadas = data.bolas ? Object.values(data.bolas) : [];
     figuraActual = data.figura || "Cartón Lleno (Apagón)";
     cartonesOcupados = data.cartonesOcupados || {};
+
+    // CORRECCIÓN CLAVE: Sincronizar y eliminar cartones liberados del celular de la jugadora
+    if (miNombre && !esAdmin) {
+      const misCartonesValidos = misCartonesIDs.filter(id => 
+        cartonesOcupados[id] && cartonesOcupados[id].nombre === miNombre
+      );
+
+      if (misCartonesValidos.length !== misCartonesIDs.length) {
+        misCartonesIDs = misCartonesValidos;
+        localStorage.setItem('misCartonesIDs', JSON.stringify(misCartonesIDs));
+      }
+    }
 
     document.querySelectorAll('.txtFiguraActual').forEach(el => el.innerText = figuraActual);
     document.getElementById('selectFiguraAdmin').value = figuraActual;
